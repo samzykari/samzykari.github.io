@@ -12,30 +12,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-    <!-- Google Fonts: Syne (Headings) & Inter (Body) -->
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Syne, Inter, Orbitron (Sci-Fi), Space Grotesk (Tech), and Share Tech Mono (Retro) -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --gothic-red: #aa0000;
+            --glitch-red: #ff3333;
         }
 
         body {
             margin: 0;
-            background-color: #000000; /* Pure black to prevent grey tones */
+            background-color: #000000; 
             color: #fff;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
         }
 
-        .title-font {
-            font-family: 'Syne', sans-serif;
-        }
+        /* Font Classes */
+        .title-font { font-family: 'Syne', sans-serif; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .font-space { font-family: 'Space Grotesk', sans-serif; }
+        .font-retro { font-family: 'Share Tech Mono', monospace; }
 
         /* --- BACKGROUND IMAGE LAYER --- */
         .bg-image-layer {
-            background-color: #000; /* Fallback */
-            background-image: url('assets/images/image_dc1969.jpg');
+            background-color: #000; 
+            background-image: url('assets/images/image_dc1969.webp');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -45,33 +48,39 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2;
-            opacity: 0.15; /* Makes the image faintly visible instantly */
+            opacity: 0.15; 
             pointer-events: none;
         }
 
         /* --- THE MAGIC MASK LAYER --- */
         #masked-layer {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0; width: 100%;
             pointer-events: none;
-            
-            /* Fallback color if the image fails, ensuring it stays cool red instead of grey */
-            background-color: var(--gothic-red);
-            background-image: url('assets/images/image_dc1969.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            
+            background-color: #000000;
             mask-image: url(#blob-mask);
             -webkit-mask-image: url(#blob-mask);
             z-index: 50;
             overflow: hidden;
+
+            --mask-text: #000000;
+            --mask-border: rgba(0, 0, 0, 0.4);
         }
 
-        /* Force everything inside the masked layer to be Black */
+        #mask-bg-image {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--gothic-red);
+            background-image: url('assets/images/image_dc1969.webp');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: -1;
+        }
+
         #masked-layer * {
-            color: #000 !important;
-            border-color: rgba(0, 0, 0, 0.4) !important;
+            color: var(--mask-text) !important;
+            border-color: var(--mask-border) !important;
         }
 
         #masked-layer .bg-grid { display: none !important; }
@@ -103,31 +112,110 @@
             transform: translateY(-5px);
         }
 
-        /* Hardware Acceleration for Smoother Scrolling & Animations */
-        .anim-up, .anim-left, .anim-right, .anim-widget {
+        /* --- ACCORDION WIDGET EFFECT --- */
+        .expand-widget {
+            flex: 1 1 0%;
+            transition: flex 0.7s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s ease, border-color 0.4s ease;
+        }
+        @media (min-width: 768px) {
+            .widget-container:hover .expand-widget {
+                flex: 0.6 1 0%; /* Shrink non-hovered */
+            }
+            .widget-container .expand-widget:hover {
+                flex: 1.8 1 0%; /* Expand hovered dramatically */
+                transform: translateY(-10px);
+            }
+        }
+
+        /* --- HORIZONTAL SCROLL & 3D CARDS (Showcase View) --- */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .perspective-container { perspective: 1500px; }
+        
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        .floating-wrapper {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Dynamic JS 3D Card */
+        .project-card {
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out, box-shadow 0.4s ease;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255,255,255,0.1);
+        }
+        
+        .project-card.tilt-reset {
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease;
+        }
+        
+        .project-card:hover {
+            box-shadow: -20px 40px 80px -10px rgba(255, 51, 51, 0.2), inset 0 0 0 1px rgba(255,255,255,0.3);
+        }
+
+        /* Dynamic Glare Effect */
+        .glare-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            border-radius: inherit;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .glare {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            opacity: 0;
+        }
+
+        .reflective-floor {
+            background: linear-gradient(to top, rgba(255, 51, 51, 0.15) 0%, transparent 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Custom Phone Mockup classes */
+        .phone-mockup {
+            width: 100%;
+            max-width: 300px;
+            aspect-ratio: 9 / 20;
+            background: #09090b;
+            border: 8px solid #18181b;
+            border-radius: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 255, 100, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+        .phone-mockup:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 35px 60px -12px rgba(0, 255, 100, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hardware Acceleration */
+        .anim-up, .anim-left, .anim-right, .anim-widget, .anim-showcase {
             will-change: transform, opacity;
             backface-visibility: hidden;
         }
 
-        /* Custom Cursor Dot - Hidden as requested */
-        #cursor-dot {
-            display: none;
-        }
+        #cursor-dot { display: none; }
 
-        /* Social Links Hover Effect */
-        .social-link:hover {
-            -webkit-text-stroke: 1px #fff;
-            color: transparent;
-        }
-        #masked-layer .social-link:hover {
-            -webkit-text-stroke: 1px #000 !important;
-            color: transparent !important;
-        }
+        .social-link:hover { -webkit-text-stroke: 1px #fff; color: transparent; }
+        #masked-layer .social-link:hover { -webkit-text-stroke: 1px var(--mask-text) !important; color: transparent !important; }
         
         .page-view {
-            display: none; /* Handled by JS router */
+            display: none; 
             min-height: 100vh;
-            padding-bottom: 10rem;
         }
     </style>
 </head>
@@ -149,7 +237,7 @@
         </defs>
     </svg>
 
-    <!-- Global Background Image (fades in on scroll) -->
+    <!-- Global Background Image -->
     <div id="global-bg" class="bg-image-layer"></div>
 
     <!-- 2. The Base Layer -->
@@ -159,8 +247,7 @@
             <!-- ==========================================
                  HOME VIEW (Hero + Widgets)
                  ========================================== -->
-            <div class="page-view home-view">
-                <!-- Hero Section -->
+            <div class="page-view home-view pb-40">
                 <section class="h-screen flex flex-col items-center justify-center border-b border-zinc-900 relative overflow-hidden">
                     <div class="absolute inset-0 bg-grid"></div>
                     <h1 class="text-[12vw] md:text-[9rem] font-bold uppercase tracking-tighter relative z-10 leading-none title-font anim-up">
@@ -173,29 +260,25 @@
                     </div>
                 </section>
 
-                <!-- Navigation Widgets -->
-                <section class="py-32 px-6 md:px-20 relative">
-                    <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 widget-container">
+                <section id="home-widgets" class="min-h-[100svh] px-6 md:px-20 relative flex items-center justify-center">
+                    <div class="w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-6 md:gap-8 widget-container h-auto md:h-[50vh]">
                         
-                        <!-- Widget 1: Creations -->
-                        <div onclick="navigateTo('creations-view')" class="glass-panel cursor-pointer h-[40vh] md:h-[50vh] flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                        <div onclick="navigateTo('creations-showcase-view')" class="expand-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500">Creations</h2>
-                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest">01 // PROJECTS</span>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500 whitespace-nowrap">Creations</h2>
+                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest whitespace-nowrap">01 // PROJECTS</span>
                         </div>
                         
-                        <!-- Widget 2: About Me -->
-                        <div onclick="navigateTo('identity-view')" class="glass-panel cursor-pointer h-[40vh] md:h-[50vh] flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                        <div onclick="navigateTo('identity-view')" class="expand-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500">About Me</h2>
-                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest">02 // IDENTITY</span>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500 whitespace-nowrap">About Me</h2>
+                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest whitespace-nowrap">02 // IDENTITY</span>
                         </div>
                         
-                        <!-- Widget 3: Contact -->
-                        <div onclick="navigateTo('communicate-view')" class="glass-panel cursor-pointer h-[40vh] md:h-[50vh] flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                        <div onclick="navigateTo('communicate-view')" class="expand-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500">Contact</h2>
-                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest">03 // COMMUNICATE</span>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500 whitespace-nowrap">Contact</h2>
+                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest whitespace-nowrap">03 // COMMUNICATE</span>
                         </div>
 
                     </div>
@@ -203,72 +286,318 @@
             </div>
 
             <!-- ==========================================
-                 CREATIONS VIEW (Norot)
+                 CREATIONS SHOWCASE VIEW (Horizontal Scroll)
                  ========================================== -->
-            <div class="page-view creations-view pt-20 px-6 md:px-20 relative">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-green-900/5 to-transparent pointer-events-none"></div>
+            <div class="page-view creations-showcase-view relative w-full h-screen overflow-hidden bg-transparent">
                 
-                <div class="max-w-7xl mx-auto flex flex-col gap-32">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent to-red-900/20 pointer-events-none"></div>
+                <div class="absolute bottom-0 w-full h-[20vh] reflective-floor pointer-events-none"></div>
+
+                <div class="absolute top-0 left-0 w-full p-8 md:p-12 flex justify-between items-start z-50">
+                    <button onclick="navigateTo('home-view')" class="text-zinc-400 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group anim-showcase">
+                        <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
+                    </button>
                     
-                    <!-- Return Header -->
-                    <div class="anim-left">
-                        <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
-                            <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
-                        </button>
+                    <div class="text-right anim-showcase hidden md:block">
+                        <p class="font-mono text-xs text-white tracking-[0.2em] animate-pulse drop-shadow-md">SCROLL HORIZONTALLY</p>
+                        <p class="font-mono text-xs text-zinc-400 mt-1">[SHIFT + WHEEL]</p>
                     </div>
+                </div>
 
-                    <!-- Norot Hero -->
-                    <div class="text-center anim-up">
-                        <div class="inline-block border border-yellow-500/50 text-yellow-500 px-6 py-2 rounded-full font-mono text-xs uppercase tracking-widest bg-yellow-500/10 backdrop-blur-md mb-8">
-                            Status: In Development
-                        </div>
-                        <h3 class="text-6xl md:text-9xl font-bold uppercase tracking-tight mb-6 title-font">NOROT.</h3>
-                        <p class="text-2xl md:text-4xl text-zinc-200 font-light mb-8 title-font">Stop rotting. Start living.</p>
-                        <p class="text-zinc-400 leading-relaxed max-w-3xl mx-auto text-lg">
-                            In an era of infinite scrolls and addictive algorithms, Norot is the digital antidote. It’s not just an "app blocker"—it’s a high-performance, discipline-first companion designed to break the cycle of mindless scrolling and turn your phone back into a tool of intent.
-                        </p>
-                    </div>
-
-                    <!-- Feature Block 1: Mindful & Tactical -->
-                    <div class="min-h-[70vh] flex flex-col md:flex-row items-center justify-between gap-16">
-                        <div class="md:w-1/2 anim-left">
-                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Mindful Interception</h4>
-                            <p class="text-zinc-400 text-lg leading-relaxed mb-10">
-                                Predictive strike aborts app launches before they open. It doesn't just stop you; it asks: "Do you really need this right now?"
-                            </p>
-                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Tactical Allowances</h4>
-                            <p class="text-zinc-400 text-lg leading-relaxed">
-                                Set a specific 1-15 min allowance using a premium, haptic-enabled time picker. Wait for the cooldown timer before entering. High-friction prevention.
+                <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide items-center perspective-container">
+                    
+                    <!-- SLIDE 1: NOROT -->
+                    <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20">
+                        
+                        <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none anim-showcase">
+                            <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-white title-font tracking-tighter leading-none drop-shadow-2xl">NOROT.</h2>
+                            <p class="text-zinc-200 mt-4 md:mt-6 font-retro text-sm md:text-base leading-relaxed border-l-4 border-[#ff3333] pl-4 max-w-lg bg-black/40 backdrop-blur-md p-5 rounded-r-xl shadow-2xl">
+                                • A retro-styled launcher and mindful companion designed to break the cycle of endless scrolling.
                             </p>
                         </div>
-                        <div class="md:w-1/2 flex justify-center anim-right">
-                            <div class="w-56 md:w-72 aspect-[9/16] bg-zinc-950 border-[6px] border-zinc-800 rounded-[3rem] flex items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(0,255,100,0.1)]">
-                                <div class="absolute inset-1 bg-zinc-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden">
-                                    <span class="font-mono text-zinc-600 text-center px-4 text-sm">[ SCREENSHOT: TIME PICKER ]</span>
-                                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-green-500/20"></div>
+
+                        <div class="floating-wrapper z-20 mt-40 md:mt-32 w-full flex justify-center md:justify-end md:pr-[5%]">
+                            <div onclick="navigateTo('project-norot-view')" class="project-card tilt-reset relative w-full max-w-md md:max-w-5xl aspect-video md:aspect-[21/9] bg-zinc-950 rounded-xl cursor-pointer anim-showcase overflow-hidden group">
+                                <!-- Now using an actual Norot image for the showcase card preview -->
+                                <img data-src="assets/images/schedule-app-popup.webp" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-90 transition-opacity duration-700 mix-blend-screen" loading="lazy">
+                                <div class="absolute inset-0 bg-gradient-to-br from-black/90 via-black/20 to-[#ff3333]/20 group-hover:opacity-60 transition-opacity duration-500"></div>
+                                <div class="glare-container"><div class="glare"></div></div>
+                                
+                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                                    <span class="border border-white/30 text-white px-8 py-3 rounded-full font-retro text-xs uppercase tracking-widest backdrop-blur-md group-hover:bg-white/20 transition-colors duration-300 shadow-2xl">
+                                        [ CLICK TO ENTER SYSTEM ]
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Feature Block 2: Privacy & Discipline -->
-                    <div class="min-h-[70vh] flex flex-col md:flex-row-reverse items-center justify-between gap-16">
-                        <div class="md:w-1/2 anim-right">
-                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Pure Black Privacy</h4>
-                            <p class="text-zinc-400 text-lg leading-relaxed mb-10">
-                                Recents Blackout entirely hides restricted apps in the task switcher. No peeking. Protected by FLAG_SECURE to prevent screenshots.
-                            </p>
-                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Visual Discipline</h4>
-                            <p class="text-zinc-400 text-lg leading-relaxed">
-                                Auto-Grayscale drains the color from your screen at night, making addictive apps bland. Strict mode acts as a fortress, preventing you from bypassing settings.
+                    <!-- SLIDE 2: CLASSIFIED -->
+                    <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20 opacity-70 hover:opacity-100 transition-opacity duration-500">
+                        <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none">
+                            <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-zinc-400 title-font tracking-tighter leading-none drop-shadow-2xl">PROJ 02.</h2>
+                            <p class="text-zinc-400 mt-4 md:mt-6 font-retro text-sm md:text-base leading-relaxed border-l-4 border-zinc-600 pl-4 max-w-lg bg-black/40 backdrop-blur-md p-5 rounded-r-xl shadow-2xl">
+                                • A new experience currently in the works. Check back later for updates.
                             </p>
                         </div>
-                        <div class="md:w-1/2 flex justify-center anim-left">
-                            <div class="w-56 md:w-72 aspect-[9/16] bg-zinc-950 border-[6px] border-zinc-800 rounded-[3rem] flex items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(0,255,100,0.1)]">
-                                <div class="absolute inset-1 bg-zinc-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden">
-                                    <span class="font-mono text-zinc-600 text-center px-4 text-sm">[ SCREENSHOT: FLASH SHIELD ]</span>
-                                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-green-500/20"></div>
+
+                        <div class="floating-wrapper z-20 mt-40 md:mt-32 w-full flex justify-center md:justify-end md:pr-[5%]">
+                            <div class="project-card tilt-reset relative w-full max-w-md md:max-w-5xl aspect-video md:aspect-[21/9] bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-center group overflow-hidden">
+                                <div class="glare-container"><div class="glare"></div></div>
+                                <div class="flex flex-col items-center gap-4 z-20 pointer-events-none">
+                                    <svg class="w-10 h-10 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                    <span class="text-zinc-500 font-retro text-xs uppercase tracking-widest bg-black/50 px-4 py-1 rounded">Work in Progress</span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 DETAILED PROJECT VIEW (Norot Deep Dive)
+                 ========================================== -->
+            <div class="page-view project-norot-view pt-12 px-6 md:px-20 relative pb-40">
+                <!-- Atmospheric Tech Tint -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black pointer-events-none"></div>
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+                
+                <div class="max-w-7xl mx-auto flex flex-col gap-32 relative z-10">
+                    
+                    <div class="mt-8 norot-nav z-30 relative">
+                        <button onclick="navigateTo('creations-showcase-view')" class="text-zinc-400 hover:text-green-400 font-retro text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
+                            <span class="group-hover:-translate-x-2 transition-transform">←</span> Back to Showcase
+                        </button>
+                    </div>
+
+                    <!-- 1. HERO SECTION (Retro Tech HUD) -->
+                    <div class="min-h-[60vh] flex flex-col md:flex-row items-start justify-between gap-16 mt-4 relative">
+                        
+                        <!-- Technical Top Bar (HUD) -->
+                        <div class="absolute -top-12 left-0 w-full flex justify-between font-retro text-[10px] md:text-sm text-green-500/50 tracking-[0.2em] border-b border-green-500/20 pb-3 norot-hud">
+                            <span>[ SYS.VER: 1.0.4 ]</span>
+                            <span class="hidden md:inline">[ STATUS: ACTIVE ]</span>
+                            <span>[ MODE: FOCUS ]</span>
+                        </div>
+
+                        <!-- Left: Giant Title & Subtitle -->
+                        <div class="md:w-[55%] w-full z-20 pt-12 relative">
+                            <h3 class="text-[18vw] md:text-[9rem] lg:text-[11rem] font-black uppercase tracking-tighter leading-none font-orbitron text-white drop-shadow-[0_0_40px_rgba(0,255,100,0.15)] norot-title">NOROT.</h3>
+                            <p class="font-retro text-green-400 text-lg md:text-2xl tracking-[0.2em] mt-6 uppercase norot-subtitle border-l-2 border-green-500 pl-4">Mindful Phone Launcher</p>
+                            <div class="w-32 h-1 bg-gradient-to-r from-green-500 to-transparent mt-10 rounded-full norot-line"></div>
+                        </div>
+
+                        <!-- Right: Artistic 40% Coverage -->
+                        <div class="md:w-[40%] w-full z-20 relative border-l border-zinc-800/60 pl-8 md:pl-12 py-4 before:absolute before:left-[-1px] before:top-0 before:w-[2px] before:h-32 before:bg-gradient-to-b before:from-green-500 before:to-transparent mt-8 md:mt-20 norot-box">
+                            <div class="absolute top-10 right-10 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full pointer-events-none transition-transform duration-700"></div>
+
+                            <div class="norot-stagger inline-block border border-green-500/30 text-green-400 px-5 py-2 rounded-full font-retro text-xs uppercase tracking-widest bg-green-500/10 mb-8 backdrop-blur-md">
+                                Status: In Development
+                            </div>
+                            
+                            <p class="norot-stagger font-space text-zinc-300 text-lg md:text-xl font-light leading-relaxed mb-10">
+                                Smartphones are designed to steal your attention. Norot is a retro-styled launcher that gives it back. It breaks the cycle of endless scrolling by slowing you down and removing the flashy traps.
+                            </p>
+
+                            <div class="norot-stagger flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-10">
+                                <div class="flex text-green-500 drop-shadow-[0_0_10px_rgba(0,255,100,0.3)]">
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                </div>
+                                <span class="text-zinc-400 font-retro text-xs tracking-[0.2em]">PROJECTED SCORE</span>
+                            </div>
+
+                            <div class="norot-stagger flex flex-col sm:flex-row gap-4 relative z-10">
+                                <button class="flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-black/40 border border-zinc-800 text-zinc-400 cursor-not-allowed relative overflow-hidden group/btn backdrop-blur-md">
+                                    <svg class="w-5 h-5 transition-transform group-hover/btn:scale-90" fill="currentColor" viewBox="0 0 24 24"><path d="M4 3.73l14.9 8.6-14.9 8.6V3.73zm1.5 2.6v11.34L15.3 12 5.5 6.33z"/></svg>
+                                    <span class="font-space font-bold uppercase tracking-wider text-sm">Playstore</span>
+                                    <div class="absolute inset-0 bg-red-900/90 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 flex items-center justify-center backdrop-blur-sm">
+                                        <span class="text-white font-retro text-xs tracking-widest flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                            APP IN PROGRESS
+                                        </span>
+                                    </div>
+                                </button>
+                                <button class="flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-black/40 border border-zinc-800 text-zinc-400 cursor-not-allowed relative overflow-hidden group/btn backdrop-blur-md">
+                                    <svg class="w-5 h-5 transition-transform group-hover/btn:scale-90" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                                    <span class="font-space font-bold uppercase tracking-wider text-sm">GitHub</span>
+                                    <div class="absolute inset-0 bg-red-900/90 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 flex items-center justify-center backdrop-blur-sm">
+                                        <span class="text-white font-retro text-xs tracking-widest flex items-center gap-2">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                            REPO LOCKED
+                                        </span>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. THE ANTI-LAUNCHER (Main Screen) -->
+                    <div class="min-h-[70vh] flex flex-col md:flex-row items-center justify-between gap-16 mt-20">
+                        <div class="md:w-1/2 anim-left z-20">
+                            <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Minimalist Base</span>
+                            <h4 class="text-4xl md:text-5xl font-bold uppercase mb-6 text-white font-orbitron drop-shadow-lg">A Calmer Home Screen</h4>
+                            <p class="font-space text-zinc-300 text-lg leading-relaxed mb-6">
+                                Say goodbye to flashy icons designed to grab your attention. Norot replaces your home screen with a simple, flowing list of text. It's peaceful, clean, and helps you use your phone with purpose.
+                            </p>
+                            <ul class="space-y-4 font-retro text-sm text-zinc-400">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>Dynamic Backgrounds:</strong> Smooth, organic gradients create a calm, low-stimulation environment.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>Wave App List:</strong> A vertically scrolling list that requires deliberate, intentional action to navigate.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="md:w-1/2 flex justify-center anim-right z-20 perspective-container">
+                            <div class="phone-mockup group">
+                                <img data-src="assets/images/mainscreen.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" alt="Norot Main Screen">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. COGNITIVE INTERCEPTION (Friction Popups) -->
+                    <div class="min-h-[70vh] flex flex-col md:flex-row-reverse items-center justify-between gap-16 mt-16">
+                        <div class="md:w-1/2 anim-right z-20">
+                            <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Mindful Pauses</span>
+                            <h4 class="text-4xl md:text-5xl font-bold uppercase mb-6 text-white font-orbitron drop-shadow-lg">The 'Take a Breath' Screen</h4>
+                            <p class="font-space text-zinc-300 text-lg leading-relaxed mb-6">
+                                Opening apps out of habit? Norot catches you. When you tap a distracting app, it asks you to wait before letting you in.
+                            </p>
+                            <ul class="space-y-4 font-retro text-sm text-zinc-400">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>The Friction Delay:</strong> Forces a 10 to 30-second wait before entry. This short pause is usually enough to break the spell and make you realize you don't actually want to scroll.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>Emergency Access:</strong> If you absolutely need the app, you can set a strict 15-minute allowance. Once the time is up, the app closes.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Double Phone Layout -->
+                        <div class="md:w-1/2 flex justify-center items-center h-[500px] relative anim-left z-20 perspective-container">
+                            <div class="phone-mockup absolute left-4 md:left-12 transform -rotate-[8deg] scale-95 opacity-60 z-10 blur-[2px] group">
+                                <img data-src="assets/images/block-popup.webp" class="w-full h-full object-cover" loading="lazy" alt="Block Popup">
+                            </div>
+                            <div class="phone-mockup absolute right-4 md:right-12 transform rotate-[4deg] z-20 group">
+                                <img data-src="assets/images/friction-popup.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" alt="Friction Popup">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. COLOR DEPRIVATION THERAPY (Grayscale) -->
+                    <div class="min-h-[70vh] flex flex-col md:flex-row items-center justify-between gap-16 mt-16">
+                        <div class="md:w-1/2 anim-left z-20">
+                            <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Visual Neutralization</span>
+                            <h4 class="text-4xl md:text-5xl font-bold uppercase mb-6 text-white font-orbitron drop-shadow-lg">Boring Mode (Grayscale)</h4>
+                            <p class="font-space text-zinc-300 text-lg leading-relaxed mb-6">
+                                Apps use bright colors to keep you hooked. Norot can automatically turn your screen black and white. Without color, your phone suddenly becomes a lot less interesting.
+                            </p>
+                            <ul class="space-y-4 font-retro text-sm text-zinc-400">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>Automated Triggers:</strong> Set your screen to turn gray at bedtime or after you've used your phone too much during the day.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>Allowance Discouragement:</strong> Even if you bypass a block to open an app, your screen stays gray, making it easier to close it when you're done.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Side by Side Phones for Grayscale contrast -->
+                        <div class="md:w-1/2 flex justify-center items-center gap-4 anim-right z-20 perspective-container">
+                            <div class="phone-mockup group w-[45%]">
+                                <img data-src="assets/images/greyscale-normal.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" alt="Normal Mode">
+                                <div class="absolute bottom-4 w-full text-center"><span class="bg-black/80 text-white text-[10px] font-retro px-3 py-1 rounded backdrop-blur-md">STIMULATION</span></div>
+                            </div>
+                            <div class="phone-mockup group w-[45%]">
+                                <img data-src="assets/images/greyscale-on.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" alt="Grayscale Mode">
+                                <div class="absolute bottom-4 w-full text-center"><span class="bg-black/80 text-green-400 text-[10px] font-retro px-3 py-1 rounded backdrop-blur-md border border-green-500/30">NEUTRALIZED</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. THE FORTRESS (Strict Mode) -->
+                    <div class="min-h-[70vh] flex flex-col md:flex-row-reverse items-center justify-between gap-16 mt-16">
+                        <div class="md:w-1/2 anim-right z-20">
+                            <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Stay on Track</span>
+                            <h4 class="text-4xl md:text-5xl font-bold uppercase mb-6 text-white font-orbitron drop-shadow-lg">Making It Hard to Quit</h4>
+                            <p class="font-space text-zinc-300 text-lg leading-relaxed mb-6">
+                                If you really need to break your focus session early, Norot makes you work for it. It's just annoying enough to keep you on track.
+                            </p>
+                            <ul class="space-y-4 font-retro text-sm text-zinc-400">
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>Cognitive Checkpoints:</strong> To exit early, you must solve a math problem or perfectly type out a long sentence without any mistakes.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span class="text-green-500 mt-0.5">►</span> 
+                                    <span><strong>The Patience Test:</strong> A 30-second "Hold Still" button. Let go for a millisecond, and the timer resets completely.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="md:w-1/2 flex justify-center items-center h-[500px] relative anim-left z-20 perspective-container">
+                            <div class="phone-mockup absolute left-4 md:left-12 transform -rotate-[6deg] z-10 group shadow-[0_0_50px_rgba(255,0,0,0.1)]">
+                                <img data-src="assets/images/strictmode-task1.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" alt="Strict Mode Typing">
+                            </div>
+                            <div class="phone-mockup absolute right-4 md:right-12 transform rotate-[8deg] z-20 group mt-12 shadow-[0_0_50px_rgba(255,0,0,0.15)] border-red-900/50">
+                                <img data-src="assets/images/strictmode-task.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" alt="Strict Mode Math">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. PRE-COMMITMENT ARCHITECTURE (Settings & Scheduling) -->
+                    <div class="flex flex-col items-center justify-center gap-12 mt-24 mb-10 text-center max-w-4xl mx-auto z-20 anim-up">
+                        <span class="font-retro text-green-500 text-sm tracking-widest uppercase block">// App Configuration</span>
+                        <h4 class="text-4xl md:text-6xl font-bold uppercase text-white font-orbitron drop-shadow-lg">Set Your Own Rules</h4>
+                        <p class="font-space text-zinc-300 text-lg leading-relaxed">
+                            Decide exactly how and when you want to use your apps. Group them together, set daily time limits, or create schedules (like 'Only allow Instagram from 6 PM to 8 PM'). Set up your boundaries once, and let Norot enforce them for you.
+                        </p>
+                    </div>
+
+                    <!-- App Group Grid & Settings Showcase -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 z-20 mb-32 anim-up perspective-container">
+                        <div class="flex justify-center">
+                            <div class="phone-mockup group">
+                                <img data-src="assets/images/guarded-app-settings.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                            </div>
+                        </div>
+                        <div class="flex justify-center mt-12 md:mt-0">
+                            <div class="phone-mockup group shadow-[0_0_60px_rgba(0,255,100,0.2)] transform md:-translate-y-8">
+                                <img data-src="assets/images/settings-screen.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                            </div>
+                        </div>
+                        <div class="flex justify-center mt-12 md:mt-0">
+                            <div class="phone-mockup group">
+                                <img data-src="assets/images/schedule-app-settings.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. CINEMATIC LANDSCAPE SHOWCASE (The Block popup) -->
+                    <div class="w-full relative rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl anim-up z-20 group mb-20 cursor-crosshair">
+                        <!-- Landscape Image -->
+                        <div class="aspect-video md:aspect-[21/9] w-full relative overflow-hidden">
+                            <img data-src="assets/images/schedule-app-popup.webp" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-1000 group-hover:scale-105" loading="lazy" alt="Schedule App Popup Landscape">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
+                            
+                            <!-- Overlay Text -->
+                            <div class="absolute bottom-8 left-8 md:bottom-12 md:left-12 pointer-events-none">
+                                <h4 class="text-3xl md:text-5xl font-bold uppercase text-white font-orbitron drop-shadow-lg flex items-center gap-4">
+                                    <svg class="w-8 h-8 md:w-10 md:h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    Time's Up
+                                </h4>
+                                <p class="font-retro text-zinc-400 text-sm mt-3 tracking-widest uppercase max-w-xl">
+                                    When your daily limit is reached or your schedule ends, the app is gently but firmly blocked. Time to get back to the real world.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -279,10 +608,9 @@
             <!-- ==========================================
                  IDENTITY VIEW (About Me)
                  ========================================== -->
-            <div class="page-view identity-view pt-20 px-6 md:px-20 relative">
+            <div class="page-view identity-view pt-20 px-6 md:px-20 relative pb-40">
                 <div class="max-w-6xl mx-auto flex flex-col gap-20">
                     
-                    <!-- Return Header -->
                     <div class="anim-left">
                         <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
                             <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
@@ -290,7 +618,6 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
-                        <!-- Text Block -->
                         <div class="md:col-span-2 glass-panel p-10 flex flex-col justify-center anim-up">
                             <h2 class="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-4 title-font text-white">Samwel // Coder.</h2>
                             <p class="text-lg text-zinc-300 font-light leading-relaxed">
@@ -298,28 +625,25 @@
                             </p>
                         </div>
 
-                        <!-- Image Block 1 -->
                         <div class="glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
                             <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
-                                <img src="assets/images/image_dc1969.jpg" alt="Anime & Gaming" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity">
+                                <img data-src="assets/images/image_dc1969.webp" alt="Anime & Gaming" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity" loading="lazy">
                             </div>
                             <h3 class="text-2xl font-bold title-font text-white z-10 relative">Anime & Gaming</h3>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
                         </div>
 
-                        <!-- Image Block 2 -->
                         <div class="md:col-span-1 glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
                             <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
-                                <img src="assets/images/image_dc1969.jpg" alt="Automotive" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity">
+                                <img data-src="assets/images/image_dc1969.webp" alt="Automotive" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity" loading="lazy">
                             </div>
                             <h3 class="text-2xl font-bold title-font text-white z-10 relative">Automotive</h3>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
                         </div>
 
-                        <!-- Image Block 3 -->
                         <div class="md:col-span-2 glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
                             <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
-                                <img src="assets/images/image_dc1969.jpg" alt="Electronics & Code" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity">
+                                <img data-src="assets/images/image_dc1969.webp" alt="Electronics & Code" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity" loading="lazy">
                             </div>
                             <h3 class="text-2xl font-bold title-font text-white z-10 relative">Electronics & Code</h3>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
@@ -331,10 +655,9 @@
             <!-- ==========================================
                  COMMUNICATE VIEW (Contact)
                  ========================================== -->
-            <div class="page-view communicate-view pt-20 px-6 md:px-20 relative">
+            <div class="page-view communicate-view pt-20 px-6 md:px-20 relative pb-40">
                 <div class="max-w-5xl mx-auto flex flex-col gap-20">
                     
-                    <!-- Return Header -->
                     <div class="anim-left">
                         <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
                             <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
@@ -372,8 +695,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- Detect Platform ---
-            // Improved mobile detection so preview windows/iframes don't hide the fluid mask
             const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
             const contentSource = document.getElementById('content-source');
             const maskedLayer = document.getElementById('masked-layer');
@@ -381,74 +702,158 @@
             gsap.registerPlugin(ScrollTrigger);
 
             if (isMobile) {
-                // Remove heavy layers for mobile
                 maskedLayer.style.display = 'none';
                 document.querySelector('svg').style.display = 'none';
             }
 
-            // --- SINGLE PAGE APPLICATION ROUTER ---
+            // --- 3D TILT PHYSICS FOR PROJECT CARDS ---
+            document.querySelectorAll('.project-card').forEach(card => {
+                const glare = card.querySelector('.glare');
+                
+                card.addEventListener('mousemove', e => {
+                    card.classList.remove('tilt-reset');
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -12; 
+                    const rotateY = ((x - centerX) / centerX) * 12;
+                    
+                    card.style.transform = `perspective(1500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+                    
+                    if (glare) {
+                        glare.style.left = `${x}px`;
+                        glare.style.top = `${y}px`;
+                        glare.style.opacity = '1';
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.classList.add('tilt-reset');
+                    card.style.transform = `perspective(1500px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                    if (glare) glare.style.opacity = '0';
+                });
+            });
+
+            // --- ROUTER & LAZY LOADER ---
             window.navigateTo = function(targetView) {
                 
-                // 1. Kill all existing scroll animations to prevent layout breaks
+                // Kill previous animations
                 ScrollTrigger.getAll().forEach(t => t.kill());
 
-                // 2. Reset Background Color and Image Opacity when changing pages
-                gsap.to("body", { backgroundColor: "#000000", duration: 0.5 });
-                gsap.to("#global-bg", { opacity: 0.15, duration: 0.5 });
+                // Set up dynamic background mapping
+                const isNorot = targetView === 'project-norot-view';
+                const bgUrl = isNorot ? "url('assets/images/norot-bg.webp')" : "url('assets/images/image_dc1969.webp')";
+                const bgColorFallback = isNorot ? "#002200" : "#aa0000";
 
-                // 3. Hide all pages, Show target page
-                document.querySelectorAll('.page-view').forEach(el => {
-                    el.style.display = 'none';
+                // Smooth background image transition
+                gsap.to("#global-bg", {
+                    opacity: 0,
+                    duration: 0.2,
+                    onComplete: () => {
+                        document.getElementById('global-bg').style.backgroundImage = bgUrl;
+                        if (targetView === 'creations-showcase-view') {
+                            gsap.to("#global-bg", { opacity: 0.4, duration: 0.3 });
+                        } else {
+                            gsap.to("#global-bg", { opacity: isNorot ? 0.3 : 0.15, duration: 0.3 });
+                        }
+                    }
                 });
-                document.querySelector('.' + targetView).style.display = 'block';
 
-                // 4. Scroll to the top of the new page instantly
+                // Reset aesthetics based on target page to prevent clashing
+                if(targetView === 'creations-showcase-view') {
+                    gsap.to("body", { backgroundColor: "#000000", duration: 0.5 });
+                    if (!isMobile) maskedLayer.style.display = 'none'; 
+                } else {
+                    gsap.to("body", { backgroundColor: "#000000", duration: 0.5 });
+                    if (!isMobile) {
+                        maskedLayer.style.display = 'block';
+                        // MAJOR UPDATE: Set mask text color to white specifically on the Norot page so it doesn't invert
+                        const maskTextCol = isNorot ? "#ffffff" : "#000000";
+                        const maskBorderCol = isNorot ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.4)";
+                        gsap.set("#masked-layer", { "--mask-text": maskTextCol, "--mask-border": maskBorderCol });
+                    }
+                }
+
+                // Switch Pages
+                document.querySelectorAll('.page-view').forEach(el => { el.style.display = 'none'; });
+                const activeView = document.querySelector('.' + targetView);
+                activeView.style.display = 'block';
                 window.scrollTo(0, 0);
 
-                // 5. Update the Mask Clone (Desktop Only)
-                if (!isMobile) {
+                // Lazy load media
+                const lazyMedia = activeView.querySelectorAll('img[data-src], video[data-src], iframe[data-src]');
+                lazyMedia.forEach(media => {
+                    media.src = media.getAttribute('data-src');
+                    media.removeAttribute('data-src');
+                });
+
+                // Update Mask
+                if (!isMobile && targetView !== 'creations-showcase-view') {
                     maskedLayer.innerHTML = '';
+                    const maskBg = document.createElement('div');
+                    maskBg.id = 'mask-bg-image';
+                    maskBg.style.backgroundImage = bgUrl;
+                    maskBg.style.backgroundColor = bgColorFallback;
+                    maskedLayer.appendChild(maskBg);
+                    
                     const clonedContent = contentSource.cloneNode(true);
                     clonedContent.id = 'cloned-content';
                     maskedLayer.appendChild(clonedContent);
                 }
 
-                // 6. Re-initialize GSAP animations for the active page
                 initAnimations();
 
-                // 7. NEW: Scroll-to-Image effect for Home Page
+                // Specific Scroll/Void effect for Home View
                 if (targetView === 'home-view') {
-                    // Fade in the global background image as you scroll
-                    gsap.to("#global-bg", {
-                        opacity: 0.4, // Reveal the image more clearly as you scroll down
-                        scrollTrigger: {
-                            trigger: ".home-view",
-                            start: "top top",
-                            end: "bottom bottom",
-                            scrub: true
-                        }
-                    });
+                    gsap.to(".home-view .animate-bounce", { opacity: 0, scrollTrigger: { trigger: ".home-view", start: "top top", end: "top -20%", scrub: true }});
+                    gsap.to("#global-bg", { opacity: 0.4, scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
+
+                    if (!isMobile) {
+                        gsap.to("#mask-bg-image", { opacity: 0, scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
+                        gsap.to("#masked-layer", { "--mask-text": "#ffffff", "--mask-border": "rgba(255, 255, 255, 0.1)", scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
+                    }
                 }
+
+                // SPECIFIC NOROT HERO GSAP SEQUENCE 
+                if (targetView === 'project-norot-view') {
+                    const tl = gsap.timeline({ delay: 0.2 });
+                    
+                    tl.fromTo(".norot-nav", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.5 })
+                      .fromTo(".norot-hud span", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, "-=0.3")
+                      .fromTo(".norot-title", { x: -80, opacity: 0, filter: "blur(10px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 1.2, ease: "power3.out" }, "-=0.2")
+                      .fromTo(".norot-subtitle", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.8")
+                      .fromTo(".norot-line", { scaleX: 0, transformOrigin: "left" }, { scaleX: 1, duration: 1, ease: "power2.out" }, "-=0.6")
+                      .fromTo(".norot-box", { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 1.2, ease: "power3.out" }, "-=1")
+                      .fromTo(".norot-stagger", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 }, "-=0.8");
+                }
+                
+                setTimeout(() => { ScrollTrigger.refresh(); }, 150);
             };
 
             // --- ANIMATION INITIALIZER ---
             function initAnimations() {
-                if (!isMobile) {
+                // Intro animation for the Showcase view
+                const showcaseItems = document.querySelectorAll('.creations-showcase-view .anim-showcase');
+                if(showcaseItems.length && document.querySelector('.creations-showcase-view').style.display !== 'none') {
+                    gsap.fromTo(showcaseItems, 
+                        { x: -50, opacity: 0 }, 
+                        { x: 0, opacity: 1, duration: 1.2, ease: "expo.out", stagger: 0.15 }
+                    );
+                }
+
+                if (!isMobile && document.querySelector('.creations-showcase-view').style.display === 'none') {
                     const clonedContent = document.getElementById('cloned-content');
                     
-                    // Dual-Layer animation sync
                     function syncAnimation(selector, varsFrom, varsTo) {
                         const baseElems = contentSource.querySelectorAll(selector);
                         const cloneElems = clonedContent.querySelectorAll(selector);
                         
                         baseElems.forEach((el, index) => {
-                            // Only trigger animations on elements that are currently visible
                             if (el.closest('.page-view').style.display !== 'none') {
-                                const clone = cloneElems[index];
-                                gsap.fromTo([el, clone], varsFrom, {
-                                    ...varsTo,
-                                    scrollTrigger: { trigger: el, start: "top 85%" }
-                                });
+                                gsap.fromTo([el, cloneElems[index]], varsFrom, { ...varsTo, scrollTrigger: { trigger: el, start: "top 85%" } });
                             }
                         });
                     }
@@ -457,41 +862,25 @@
                     syncAnimation('.anim-left', { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
                     syncAnimation('.anim-right', { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
 
-                    // Staggered Animation Sequence for Widgets
                     const baseWidgetContainers = contentSource.querySelectorAll('.widget-container');
                     const cloneWidgetContainers = clonedContent.querySelectorAll('.widget-container');
 
                     baseWidgetContainers.forEach((container, i) => {
                         if (container.closest('.page-view').style.display !== 'none') {
-                            const baseItems = container.querySelectorAll('.anim-widget');
-                            const cloneItems = cloneWidgetContainers[i].querySelectorAll('.anim-widget');
+                            const baseItems = Array.from(container.querySelectorAll('.anim-widget'));
+                            const cloneItems = Array.from(cloneWidgetContainers[i].querySelectorAll('.anim-widget'));
+                            const pairedItems = baseItems.map((item, index) => [item, cloneItems[index]]);
                             
-                            // Use offset delays connected to the same scroll trigger for a rock-solid stagger
-                            baseItems.forEach((item, index) => {
-                                gsap.fromTo([item, cloneItems[index]], 
-                                    { y: 100, opacity: 0 }, 
-                                    { 
-                                        y: 0, opacity: 1, 
-                                        duration: 1.2, 
-                                        ease: "expo.out", 
-                                        delay: index * 0.15, // Sequential stagger delay
-                                        scrollTrigger: { trigger: container, start: "top 85%" } 
-                                    }
-                                );
-                            });
+                            gsap.fromTo(pairedItems, { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: "expo.out", stagger: 0.2, scrollTrigger: { trigger: container, start: "top 75%" }});
                         }
                     });
 
                 } else {
-                    // Mobile: Single-Layer animation
+                    // Standard Single Layer Animations
                     function animateBase(selector, varsFrom, varsTo) {
-                        const elems = document.querySelectorAll(selector);
-                        elems.forEach((el) => {
+                        document.querySelectorAll(selector).forEach((el) => {
                             if (el.closest('.page-view').style.display !== 'none') {
-                                gsap.fromTo(el, varsFrom, {
-                                    ...varsTo,
-                                    scrollTrigger: { trigger: el, start: "top 85%" }
-                                });
+                                gsap.fromTo(el, varsFrom, { ...varsTo, scrollTrigger: { trigger: el, start: "top 85%" } });
                             }
                         });
                     }
@@ -500,29 +889,18 @@
                     animateBase('.anim-left', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
                     animateBase('.anim-right', { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
 
-                    // Mobile Staggered Sequence
                     document.querySelectorAll('.widget-container').forEach(container => {
                         if (container.closest('.page-view').style.display !== 'none') {
-                            const items = container.querySelectorAll('.anim-widget');
-                            gsap.fromTo(items, 
-                                { y: 60, opacity: 0 }, 
-                                { 
-                                    y: 0, opacity: 1, duration: 1, ease: "expo.out", 
-                                    stagger: 0.15, // Mobile native GSAP stagger
-                                    scrollTrigger: { trigger: container, start: "top 85%" } 
-                                }
-                            );
+                            gsap.fromTo(container.querySelectorAll('.anim-widget'), { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.2, scrollTrigger: { trigger: container, start: "top 75%" }});
                         }
                     });
                 }
             }
 
-            // --- FLUID PHYSICS SYSTEM (Desktop Only) ---
+            // --- FLUID PHYSICS SYSTEM ---
             if (!isMobile) {
                 const maskGroup = document.getElementById('mask-group');
-                const numCircles = 24; 
-                const circles = [];
-                const history = [];
+                const numCircles = 24; const circles = []; const history = [];
 
                 for (let i = 0; i < numCircles; i++) {
                     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -534,59 +912,35 @@
 
                 let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
                 let lastMouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-                let velocity = 0;
-                let currentScale = 0; 
-                let targetScale = 0;
-                let idleTimer = 0;
+                let velocity = 0; let currentScale = 0; let targetScale = 0; let idleTimer = 0;
 
-                // Mouse tracking
-                window.addEventListener('mousemove', e => {
-                    mouse.x = e.clientX;
-                    mouse.y = e.clientY;
-                });
-
-                window.addEventListener('touchmove', e => {
-                    mouse.x = e.touches[0].clientX;
-                    mouse.y = e.touches[0].clientY;
-                });
+                window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+                window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
 
                 function animate() {
                     let dx = mouse.x - lastMouse.x;
                     let dy = mouse.y - lastMouse.y;
                     velocity = Math.sqrt(dx * dx + dy * dy);
-                    lastMouse.x = mouse.x;
-                    lastMouse.y = mouse.y;
+                    lastMouse.x = mouse.x; lastMouse.y = mouse.y;
 
                     if (velocity > 0.5) {
                         idleTimer = 0;
                         targetScale = Math.min(1.5, targetScale + 0.05 + (velocity * 0.005));
                     } else {
                         idleTimer++;
-                        if (idleTimer > 15) { 
-                            // Keeps the blob slightly visible when idle
-                            targetScale = Math.max(0.3, targetScale - 0.02); 
-                        }
+                        if (idleTimer > 15) { targetScale = Math.max(0.3, targetScale - 0.02); }
                     }
                     
                     currentScale += (targetScale - currentScale) * 0.08;
-
                     history[0].x += (mouse.x - history[0].x) * 0.15;
                     history[0].y += (mouse.y - history[0].y) * 0.15;
 
-                    const tension = 0.25;  
-                    const friction = 0.55; 
-
                     for (let i = 1; i < numCircles; i++) {
-                        let node = history[i];
-                        let target = history[i-1];
-                        
-                        node.vx += (target.x - node.x) * tension;
-                        node.vy += (target.y - node.y) * tension;
-                        node.vx *= friction;
-                        node.vy *= friction;
-                        
-                        node.x += node.vx;
-                        node.y += node.vy;
+                        let node = history[i]; let target = history[i-1];
+                        node.vx += (target.x - node.x) * 0.25;
+                        node.vy += (target.y - node.y) * 0.25;
+                        node.vx *= 0.55; node.vy *= 0.55;
+                        node.x += node.vx; node.y += node.vy;
                     }
 
                     let time = Date.now() * 0.003; 
@@ -604,14 +958,12 @@
                         circles[i].setAttribute('cy', history[i].y + squirmY + scrollY);
                         circles[i].setAttribute('r', finalRadius);
                     }
-
                     requestAnimationFrame(animate);
                 }
                 animate(); 
             }
 
             // --- START APP ---
-            // Opens the 'home-view' by default when the page first loads
             navigateTo('home-view');
         });
     </script>
