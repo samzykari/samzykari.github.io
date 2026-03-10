@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMZYKARI | Immersive Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP for Smooth Scroll Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Google Fonts: Syne (Headings) & Inter (Body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gothic-red: #aa0000;
+        }
+
+        body {
+            margin: 0;
+            background-color: #000000; /* Pure black to prevent grey tones */
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .title-font {
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* --- BACKGROUND IMAGE LAYER --- */
+        .bg-image-layer {
+            background-color: #000; /* Fallback */
+            background-image: url('assets/images/image_dc1969.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        #global-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            opacity: 0.15; /* Makes the image faintly visible instantly */
+            pointer-events: none;
+        }
+
+        /* --- THE MAGIC MASK LAYER --- */
+        #masked-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            
+            /* Fallback color if the image fails, ensuring it stays cool red instead of grey */
+            background-color: var(--gothic-red);
+            background-image: url('assets/images/image_dc1969.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            
+            mask-image: url(#blob-mask);
+            -webkit-mask-image: url(#blob-mask);
+            z-index: 50;
+            overflow: hidden;
+        }
+
+        /* Force everything inside the masked layer to be Black */
+        #masked-layer * {
+            color: #000 !important;
+            border-color: rgba(0, 0, 0, 0.4) !important;
+        }
+
+        #masked-layer .bg-grid { display: none !important; }
+        #masked-layer .glass-panel { background: rgba(0, 0, 0, 0.05) !important; box-shadow: none !important; }
+
+        /* --- BASE LAYER STYLES --- */
+        #base-layer {
+            position: relative;
+            width: 100%;
+        }
+
+        .bg-grid {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+        }
+
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(30, 30, 30, 0.6) 0%, rgba(10, 10, 10, 0.6) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+        }
+
+        /* Hardware Acceleration for Smoother Scrolling & Animations */
+        .anim-up, .anim-left, .anim-right, .anim-widget {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+        }
+
+        /* Custom Cursor Dot - Hidden as requested */
+        #cursor-dot {
+            display: none;
+        }
+
+        /* Social Links Hover Effect */
+        .social-link:hover {
+            -webkit-text-stroke: 1px #fff;
+            color: transparent;
+        }
+        #masked-layer .social-link:hover {
+            -webkit-text-stroke: 1px #000 !important;
+            color: transparent !important;
+        }
+        
+        .page-view {
+            display: none; /* Handled by JS router */
+            min-height: 100vh;
+            padding-bottom: 10rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. The SVG Mask Engine -->
+    <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+            <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 60 -30" result="goo" />
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="noise" />
+                <feDisplacementMap in="goo" in2="noise" scale="25" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+            <mask id="blob-mask" maskContentUnits="userSpaceOnUse">
+                <rect x="-10000" y="-10000" width="20000" height="100000" fill="black" />
+                <g filter="url(#goo)" id="mask-group"></g>
+            </mask>
+        </defs>
+    </svg>
+
+    <!-- Global Background Image (fades in on scroll) -->
+    <div id="global-bg" class="bg-image-layer"></div>
+
+    <!-- 2. The Base Layer -->
+    <div id="base-layer">
+        <div id="content-source" class="w-full">
+            
+            <!-- ==========================================
+                 HOME VIEW (Hero + Widgets)
+                 ========================================== -->
+            <div class="page-view home-view">
+                <!-- Hero Section -->
+                <section class="h-screen flex flex-col items-center justify-center border-b border-zinc-900 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-grid"></div>
+                    <h1 class="text-[12vw] md:text-[9rem] font-bold uppercase tracking-tighter relative z-10 leading-none title-font anim-up">
+                        SAMZYKARI
+                    </h1>
+                    <p class="text-zinc-400 mt-6 tracking-widest font-mono text-sm uppercase anim-up">Samwel // Coder & Digital Artisan</p>
+                    
+                    <div class="absolute bottom-12 anim-up animate-bounce">
+                        <span class="text-zinc-600 font-mono text-xs tracking-widest">SCROLL TO EXPLORE ↓</span>
+                    </div>
+                </section>
+
+                <!-- Navigation Widgets -->
+                <section class="py-32 px-6 md:px-20 relative">
+                    <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 widget-container">
+                        
+                        <!-- Widget 1: Creations -->
+                        <div onclick="navigateTo('creations-view')" class="glass-panel cursor-pointer h-[40vh] md:h-[50vh] flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500">Creations</h2>
+                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest">01 // PROJECTS</span>
+                        </div>
+                        
+                        <!-- Widget 2: About Me -->
+                        <div onclick="navigateTo('identity-view')" class="glass-panel cursor-pointer h-[40vh] md:h-[50vh] flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500">About Me</h2>
+                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest">02 // IDENTITY</span>
+                        </div>
+                        
+                        <!-- Widget 3: Contact -->
+                        <div onclick="navigateTo('communicate-view')" class="glass-panel cursor-pointer h-[40vh] md:h-[50vh] flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500">Contact</h2>
+                            <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest">03 // COMMUNICATE</span>
+                        </div>
+
+                    </div>
+                </section>
+            </div>
+
+            <!-- ==========================================
+                 CREATIONS VIEW (Norot)
+                 ========================================== -->
+            <div class="page-view creations-view pt-20 px-6 md:px-20 relative">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-green-900/5 to-transparent pointer-events-none"></div>
+                
+                <div class="max-w-7xl mx-auto flex flex-col gap-32">
+                    
+                    <!-- Return Header -->
+                    <div class="anim-left">
+                        <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
+                            <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
+                        </button>
+                    </div>
+
+                    <!-- Norot Hero -->
+                    <div class="text-center anim-up">
+                        <div class="inline-block border border-yellow-500/50 text-yellow-500 px-6 py-2 rounded-full font-mono text-xs uppercase tracking-widest bg-yellow-500/10 backdrop-blur-md mb-8">
+                            Status: In Development
+                        </div>
+                        <h3 class="text-6xl md:text-9xl font-bold uppercase tracking-tight mb-6 title-font">NOROT.</h3>
+                        <p class="text-2xl md:text-4xl text-zinc-200 font-light mb-8 title-font">Stop rotting. Start living.</p>
+                        <p class="text-zinc-400 leading-relaxed max-w-3xl mx-auto text-lg">
+                            In an era of infinite scrolls and addictive algorithms, Norot is the digital antidote. It’s not just an "app blocker"—it’s a high-performance, discipline-first companion designed to break the cycle of mindless scrolling and turn your phone back into a tool of intent.
+                        </p>
+                    </div>
+
+                    <!-- Feature Block 1: Mindful & Tactical -->
+                    <div class="min-h-[70vh] flex flex-col md:flex-row items-center justify-between gap-16">
+                        <div class="md:w-1/2 anim-left">
+                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Mindful Interception</h4>
+                            <p class="text-zinc-400 text-lg leading-relaxed mb-10">
+                                Predictive strike aborts app launches before they open. It doesn't just stop you; it asks: "Do you really need this right now?"
+                            </p>
+                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Tactical Allowances</h4>
+                            <p class="text-zinc-400 text-lg leading-relaxed">
+                                Set a specific 1-15 min allowance using a premium, haptic-enabled time picker. Wait for the cooldown timer before entering. High-friction prevention.
+                            </p>
+                        </div>
+                        <div class="md:w-1/2 flex justify-center anim-right">
+                            <div class="w-56 md:w-72 aspect-[9/16] bg-zinc-950 border-[6px] border-zinc-800 rounded-[3rem] flex items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(0,255,100,0.1)]">
+                                <div class="absolute inset-1 bg-zinc-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden">
+                                    <span class="font-mono text-zinc-600 text-center px-4 text-sm">[ SCREENSHOT: TIME PICKER ]</span>
+                                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-green-500/20"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature Block 2: Privacy & Discipline -->
+                    <div class="min-h-[70vh] flex flex-col md:flex-row-reverse items-center justify-between gap-16">
+                        <div class="md:w-1/2 anim-right">
+                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Pure Black Privacy</h4>
+                            <p class="text-zinc-400 text-lg leading-relaxed mb-10">
+                                Recents Blackout entirely hides restricted apps in the task switcher. No peeking. Protected by FLAG_SECURE to prevent screenshots.
+                            </p>
+                            <h4 class="text-4xl font-bold uppercase mb-6 text-white title-font">Visual Discipline</h4>
+                            <p class="text-zinc-400 text-lg leading-relaxed">
+                                Auto-Grayscale drains the color from your screen at night, making addictive apps bland. Strict mode acts as a fortress, preventing you from bypassing settings.
+                            </p>
+                        </div>
+                        <div class="md:w-1/2 flex justify-center anim-left">
+                            <div class="w-56 md:w-72 aspect-[9/16] bg-zinc-950 border-[6px] border-zinc-800 rounded-[3rem] flex items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(0,255,100,0.1)]">
+                                <div class="absolute inset-1 bg-zinc-900 rounded-[2.5rem] flex items-center justify-center overflow-hidden">
+                                    <span class="font-mono text-zinc-600 text-center px-4 text-sm">[ SCREENSHOT: FLASH SHIELD ]</span>
+                                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-green-500/20"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 IDENTITY VIEW (About Me)
+                 ========================================== -->
+            <div class="page-view identity-view pt-20 px-6 md:px-20 relative">
+                <div class="max-w-6xl mx-auto flex flex-col gap-20">
+                    
+                    <!-- Return Header -->
+                    <div class="anim-left">
+                        <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
+                            <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
+                        <!-- Text Block -->
+                        <div class="md:col-span-2 glass-panel p-10 flex flex-col justify-center anim-up">
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-4 title-font text-white">Samwel // Coder.</h2>
+                            <p class="text-lg text-zinc-300 font-light leading-relaxed">
+                                I'm a university student and coder trying to break into the market. I love computers, coding, electronics, and cars. Honestly, I'm just a curious nerd who tries anything interesting as long as it's fun. Also heavily into anime and gaming.
+                            </p>
+                        </div>
+
+                        <!-- Image Block 1 -->
+                        <div class="glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
+                            <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
+                                <img src="assets/images/image_dc1969.jpg" alt="Anime & Gaming" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity">
+                            </div>
+                            <h3 class="text-2xl font-bold title-font text-white z-10 relative">Anime & Gaming</h3>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+                        </div>
+
+                        <!-- Image Block 2 -->
+                        <div class="md:col-span-1 glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
+                            <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
+                                <img src="assets/images/image_dc1969.jpg" alt="Automotive" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity">
+                            </div>
+                            <h3 class="text-2xl font-bold title-font text-white z-10 relative">Automotive</h3>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+                        </div>
+
+                        <!-- Image Block 3 -->
+                        <div class="md:col-span-2 glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
+                            <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
+                                <img src="assets/images/image_dc1969.jpg" alt="Electronics & Code" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity">
+                            </div>
+                            <h3 class="text-2xl font-bold title-font text-white z-10 relative">Electronics & Code</h3>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 COMMUNICATE VIEW (Contact)
+                 ========================================== -->
+            <div class="page-view communicate-view pt-20 px-6 md:px-20 relative">
+                <div class="max-w-5xl mx-auto flex flex-col gap-20">
+                    
+                    <!-- Return Header -->
+                    <div class="anim-left">
+                        <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
+                            <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-10 title-font uppercase font-bold text-4xl md:text-7xl mt-10">
+                        <a href="mailto:samzykari@gmail.com" class="social-link anim-left transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                            <span>Email</span>
+                            <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">samzykari@gmail.com</span>
+                        </a>
+                        <a href="#" class="social-link anim-right transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                            <span>Instagram</span>
+                            <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">@_sam.zy._</span>
+                        </a>
+                        <a href="#" class="social-link anim-left transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                            <span>TikTok</span>
+                            <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">@samzykari</span>
+                        </a>
+                        <a href="#" class="social-link anim-right transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                            <span>X / Twitter</span>
+                            <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">@samzykari</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 3. The Masked Layer (Cloned naturally via JS) -->
+    <div id="masked-layer"></div>
+
+    <!-- JavaScript Engine -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Detect Platform ---
+            // Improved mobile detection so preview windows/iframes don't hide the fluid mask
+            const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+            const contentSource = document.getElementById('content-source');
+            const maskedLayer = document.getElementById('masked-layer');
+
+            gsap.registerPlugin(ScrollTrigger);
+
+            if (isMobile) {
+                // Remove heavy layers for mobile
+                maskedLayer.style.display = 'none';
+                document.querySelector('svg').style.display = 'none';
+            }
+
+            // --- SINGLE PAGE APPLICATION ROUTER ---
+            window.navigateTo = function(targetView) {
+                
+                // 1. Kill all existing scroll animations to prevent layout breaks
+                ScrollTrigger.getAll().forEach(t => t.kill());
+
+                // 2. Reset Background Color and Image Opacity when changing pages
+                gsap.to("body", { backgroundColor: "#000000", duration: 0.5 });
+                gsap.to("#global-bg", { opacity: 0.15, duration: 0.5 });
+
+                // 3. Hide all pages, Show target page
+                document.querySelectorAll('.page-view').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.querySelector('.' + targetView).style.display = 'block';
+
+                // 4. Scroll to the top of the new page instantly
+                window.scrollTo(0, 0);
+
+                // 5. Update the Mask Clone (Desktop Only)
+                if (!isMobile) {
+                    maskedLayer.innerHTML = '';
+                    const clonedContent = contentSource.cloneNode(true);
+                    clonedContent.id = 'cloned-content';
+                    maskedLayer.appendChild(clonedContent);
+                }
+
+                // 6. Re-initialize GSAP animations for the active page
+                initAnimations();
+
+                // 7. NEW: Scroll-to-Image effect for Home Page
+                if (targetView === 'home-view') {
+                    // Fade in the global background image as you scroll
+                    gsap.to("#global-bg", {
+                        opacity: 0.4, // Reveal the image more clearly as you scroll down
+                        scrollTrigger: {
+                            trigger: ".home-view",
+                            start: "top top",
+                            end: "bottom bottom",
+                            scrub: true
+                        }
+                    });
+                }
+            };
+
+            // --- ANIMATION INITIALIZER ---
+            function initAnimations() {
+                if (!isMobile) {
+                    const clonedContent = document.getElementById('cloned-content');
+                    
+                    // Dual-Layer animation sync
+                    function syncAnimation(selector, varsFrom, varsTo) {
+                        const baseElems = contentSource.querySelectorAll(selector);
+                        const cloneElems = clonedContent.querySelectorAll(selector);
+                        
+                        baseElems.forEach((el, index) => {
+                            // Only trigger animations on elements that are currently visible
+                            if (el.closest('.page-view').style.display !== 'none') {
+                                const clone = cloneElems[index];
+                                gsap.fromTo([el, clone], varsFrom, {
+                                    ...varsTo,
+                                    scrollTrigger: { trigger: el, start: "top 85%" }
+                                });
+                            }
+                        });
+                    }
+
+                    syncAnimation('.anim-up', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
+                    syncAnimation('.anim-left', { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
+                    syncAnimation('.anim-right', { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
+
+                    // Staggered Animation Sequence for Widgets
+                    const baseWidgetContainers = contentSource.querySelectorAll('.widget-container');
+                    const cloneWidgetContainers = clonedContent.querySelectorAll('.widget-container');
+
+                    baseWidgetContainers.forEach((container, i) => {
+                        if (container.closest('.page-view').style.display !== 'none') {
+                            const baseItems = container.querySelectorAll('.anim-widget');
+                            const cloneItems = cloneWidgetContainers[i].querySelectorAll('.anim-widget');
+                            
+                            // Use offset delays connected to the same scroll trigger for a rock-solid stagger
+                            baseItems.forEach((item, index) => {
+                                gsap.fromTo([item, cloneItems[index]], 
+                                    { y: 100, opacity: 0 }, 
+                                    { 
+                                        y: 0, opacity: 1, 
+                                        duration: 1.2, 
+                                        ease: "expo.out", 
+                                        delay: index * 0.15, // Sequential stagger delay
+                                        scrollTrigger: { trigger: container, start: "top 85%" } 
+                                    }
+                                );
+                            });
+                        }
+                    });
+
+                } else {
+                    // Mobile: Single-Layer animation
+                    function animateBase(selector, varsFrom, varsTo) {
+                        const elems = document.querySelectorAll(selector);
+                        elems.forEach((el) => {
+                            if (el.closest('.page-view').style.display !== 'none') {
+                                gsap.fromTo(el, varsFrom, {
+                                    ...varsTo,
+                                    scrollTrigger: { trigger: el, start: "top 85%" }
+                                });
+                            }
+                        });
+                    }
+
+                    animateBase('.anim-up', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out" });
+                    animateBase('.anim-left', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
+                    animateBase('.anim-right', { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
+
+                    // Mobile Staggered Sequence
+                    document.querySelectorAll('.widget-container').forEach(container => {
+                        if (container.closest('.page-view').style.display !== 'none') {
+                            const items = container.querySelectorAll('.anim-widget');
+                            gsap.fromTo(items, 
+                                { y: 60, opacity: 0 }, 
+                                { 
+                                    y: 0, opacity: 1, duration: 1, ease: "expo.out", 
+                                    stagger: 0.15, // Mobile native GSAP stagger
+                                    scrollTrigger: { trigger: container, start: "top 85%" } 
+                                }
+                            );
+                        }
+                    });
+                }
+            }
+
+            // --- FLUID PHYSICS SYSTEM (Desktop Only) ---
+            if (!isMobile) {
+                const maskGroup = document.getElementById('mask-group');
+                const numCircles = 24; 
+                const circles = [];
+                const history = [];
+
+                for (let i = 0; i < numCircles; i++) {
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.setAttribute('fill', 'white'); 
+                    maskGroup.appendChild(circle);
+                    circles.push(circle);
+                    history.push({ x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 });
+                }
+
+                let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+                let lastMouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+                let velocity = 0;
+                let currentScale = 0; 
+                let targetScale = 0;
+                let idleTimer = 0;
+
+                // Mouse tracking
+                window.addEventListener('mousemove', e => {
+                    mouse.x = e.clientX;
+                    mouse.y = e.clientY;
+                });
+
+                window.addEventListener('touchmove', e => {
+                    mouse.x = e.touches[0].clientX;
+                    mouse.y = e.touches[0].clientY;
+                });
+
+                function animate() {
+                    let dx = mouse.x - lastMouse.x;
+                    let dy = mouse.y - lastMouse.y;
+                    velocity = Math.sqrt(dx * dx + dy * dy);
+                    lastMouse.x = mouse.x;
+                    lastMouse.y = mouse.y;
+
+                    if (velocity > 0.5) {
+                        idleTimer = 0;
+                        targetScale = Math.min(1.5, targetScale + 0.05 + (velocity * 0.005));
+                    } else {
+                        idleTimer++;
+                        if (idleTimer > 15) { 
+                            // Keeps the blob slightly visible when idle
+                            targetScale = Math.max(0.3, targetScale - 0.02); 
+                        }
+                    }
+                    
+                    currentScale += (targetScale - currentScale) * 0.08;
+
+                    history[0].x += (mouse.x - history[0].x) * 0.15;
+                    history[0].y += (mouse.y - history[0].y) * 0.15;
+
+                    const tension = 0.25;  
+                    const friction = 0.55; 
+
+                    for (let i = 1; i < numCircles; i++) {
+                        let node = history[i];
+                        let target = history[i-1];
+                        
+                        node.vx += (target.x - node.x) * tension;
+                        node.vy += (target.y - node.y) * tension;
+                        node.vx *= friction;
+                        node.vy *= friction;
+                        
+                        node.x += node.vx;
+                        node.y += node.vy;
+                    }
+
+                    let time = Date.now() * 0.003; 
+                    let scrollY = window.scrollY;
+
+                    for (let i = 0; i < numCircles; i++) {
+                        let baseRadius = Math.max(5, 80 - (i * 3.5));
+                        let pulse = Math.sin(time + (i * 0.5)) * 12;
+                        let finalRadius = Math.max(0, (baseRadius + pulse) * currentScale);
+                        
+                        let squirmX = Math.sin(time * 1.5 + i) * 15 * currentScale;
+                        let squirmY = Math.cos(time * 1.2 + i * 0.8) * 15 * currentScale;
+
+                        circles[i].setAttribute('cx', history[i].x + squirmX);
+                        circles[i].setAttribute('cy', history[i].y + squirmY + scrollY);
+                        circles[i].setAttribute('r', finalRadius);
+                    }
+
+                    requestAnimationFrame(animate);
+                }
+                animate(); 
+            }
+
+            // --- START APP ---
+            // Opens the 'home-view' by default when the page first loads
+            navigateTo('home-view');
+        });
+    </script>
+</body>
+</html>
