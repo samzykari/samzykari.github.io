@@ -5,14 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAMZYKARI | Immersive Portfolio</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- GSAP for Smooth Scroll Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-    <!-- Google Fonts: Syne, Inter, Orbitron (Sci-Fi), Space Grotesk (Tech), and Share Tech Mono (Retro) -->
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
     <style>
@@ -85,6 +82,9 @@
 
         #masked-layer .bg-grid { display: none !important; }
         #masked-layer .glass-panel { background: rgba(0, 0, 0, 0.05) !important; box-shadow: none !important; }
+        
+        /* PREVENT GAME ENGINE FROM CLONING IN MASK LAYER (Just in case) */
+        #masked-layer iframe { display: none !important; }
 
         /* --- BASE LAYER STYLES --- */
         #base-layer {
@@ -112,18 +112,23 @@
             transform: translateY(-5px);
         }
 
-        /* --- ACCORDION WIDGET EFFECT --- */
-        .expand-widget {
-            flex: 1 1 0%;
-            transition: flex 0.7s cubic-bezier(0.25, 1, 0.5, 1), transform 0.4s ease, border-color 0.4s ease;
+        /* --- 3D POP WIDGET EFFECT --- */
+        .pop-widget {
+            position: relative;
+            z-index: 1;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease, box-shadow 0.5s ease;
         }
         @media (min-width: 768px) {
-            .widget-container:hover .expand-widget {
-                flex: 0.6 1 0%; /* Shrink non-hovered */
+            /* Dim and push back the non-hovered items */
+            .widget-container:hover .pop-widget:not(:hover) {
+                opacity: 0.5;
+                transform: scale(0.95);
             }
-            .widget-container .expand-widget:hover {
-                flex: 1.8 1 0%; /* Expand hovered dramatically */
-                transform: translateY(-10px);
+            /* Drastically scale and elevate the hovered item */
+            .widget-container .pop-widget:hover {
+                transform: scale(1.15) translateY(-15px) !important;
+                z-index: 10;
+                box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
             }
         }
 
@@ -221,7 +226,6 @@
 </head>
 <body>
 
-    <!-- 1. The SVG Mask Engine -->
     <svg style="width: 0; height: 0; position: absolute;">
         <defs>
             <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
@@ -237,16 +241,11 @@
         </defs>
     </svg>
 
-    <!-- Global Background Image -->
     <div id="global-bg" class="bg-image-layer"></div>
 
-    <!-- 2. The Base Layer -->
     <div id="base-layer">
         <div id="content-source" class="w-full">
             
-            <!-- ==========================================
-                 HOME VIEW (Hero + Widgets)
-                 ========================================== -->
             <div class="page-view home-view pb-40">
                 <section class="h-screen flex flex-col items-center justify-center border-b border-zinc-900 relative overflow-hidden">
                     <div class="absolute inset-0 bg-grid"></div>
@@ -261,23 +260,23 @@
                 </section>
 
                 <section id="home-widgets" class="min-h-[100svh] px-6 md:px-20 relative flex items-center justify-center">
-                    <div class="w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-6 md:gap-8 widget-container h-auto md:h-[50vh]">
+                    <div class="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 widget-container h-auto md:h-[50vh]">
                         
-                        <div onclick="navigateTo('creations-showcase-view')" class="expand-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                        <div onclick="navigateTo('creations-showcase-view')" class="pop-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden w-full">
                             <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500 whitespace-nowrap">Creations</h2>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white whitespace-nowrap">Creations</h2>
                             <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest whitespace-nowrap">01 // PROJECTS</span>
                         </div>
                         
-                        <div onclick="navigateTo('identity-view')" class="expand-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                        <div onclick="navigateTo('identity-view')" class="pop-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden w-full">
                             <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500 whitespace-nowrap">About Me</h2>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white whitespace-nowrap">About Me</h2>
                             <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest whitespace-nowrap">02 // IDENTITY</span>
                         </div>
                         
-                        <div onclick="navigateTo('communicate-view')" class="expand-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden">
+                        <div onclick="navigateTo('communicate-view')" class="pop-widget glass-panel cursor-pointer h-[35vh] md:h-full flex flex-col items-center justify-center group anim-widget relative overflow-hidden w-full">
                             <div class="absolute inset-0 bg-gradient-to-tr from-zinc-800/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white group-hover:scale-110 transition-transform duration-500 whitespace-nowrap">Contact</h2>
+                            <h2 class="text-4xl md:text-5xl font-bold uppercase title-font text-white whitespace-nowrap">Contact</h2>
                             <span class="mt-6 text-zinc-500 font-mono text-xs tracking-widest whitespace-nowrap">03 // COMMUNICATE</span>
                         </div>
 
@@ -285,9 +284,6 @@
                 </section>
             </div>
 
-            <!-- ==========================================
-                 CREATIONS SHOWCASE VIEW (Horizontal Scroll)
-                 ========================================== -->
             <div class="page-view creations-showcase-view relative w-full h-screen overflow-hidden bg-transparent">
                 
                 <div class="absolute inset-0 bg-gradient-to-b from-transparent to-red-900/20 pointer-events-none"></div>
@@ -306,7 +302,6 @@
 
                 <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide items-center perspective-container">
                     
-                    <!-- SLIDE 1: NOROT -->
                     <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20">
                         
                         <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none anim-showcase">
@@ -318,7 +313,6 @@
 
                         <div class="floating-wrapper z-20 mt-40 md:mt-32 w-full flex justify-center md:justify-end md:pr-[5%]">
                             <div onclick="navigateTo('project-norot-view')" class="project-card tilt-reset relative w-full max-w-md md:max-w-5xl aspect-video md:aspect-[21/9] bg-zinc-950 rounded-xl cursor-pointer anim-showcase overflow-hidden group">
-                                <!-- Now using an actual Norot image for the showcase card preview -->
                                 <img data-src="assets/images/schedule-app-popup.webp" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-90 transition-opacity duration-700 mix-blend-screen" loading="lazy">
                                 <div class="absolute inset-0 bg-gradient-to-br from-black/90 via-black/20 to-[#ff3333]/20 group-hover:opacity-60 transition-opacity duration-500"></div>
                                 <div class="glare-container"><div class="glare"></div></div>
@@ -332,10 +326,34 @@
                         </div>
                     </div>
 
-                    <!-- SLIDE 2: CLASSIFIED -->
+                    <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20">
+                        <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none anim-showcase">
+                            <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-white title-font tracking-tighter leading-none drop-shadow-[0_0_30px_rgba(0,229,255,0.4)]">NOLAWS.</h2>
+                            <p class="text-zinc-200 mt-4 md:mt-6 font-retro text-sm md:text-base leading-relaxed border-l-4 border-[#00E5FF] pl-4 max-w-lg bg-black/60 backdrop-blur-md p-5 rounded-r-xl shadow-2xl">
+                                • A high-speed, 3D browser arcade racer. Built from scratch with Babylon.js. Dodge traffic, trigger the frontal blast, and survive the endless highway.
+                            </p>
+                        </div>
+
+                        <div class="floating-wrapper z-20 mt-40 md:mt-32 w-full flex justify-center md:justify-end md:pr-[5%]">
+                            <div onclick="window.open('nolaws/index.html', '_blank')" class="project-card tilt-reset relative w-full max-w-md md:max-w-5xl aspect-video md:aspect-[21/9] bg-zinc-950 rounded-xl cursor-pointer anim-showcase overflow-hidden group shadow-[0_0_50px_rgba(0,229,255,0.1)]">
+                                
+                                <img data-src="assets/images/nolaws.webp" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-90 transition-opacity duration-700 mix-blend-screen" loading="lazy" alt="Nolaws Cover">
+                                
+                                <div class="absolute inset-0 bg-gradient-to-br from-black/90 via-black/20 to-[#00E5FF]/20 group-hover:opacity-60 transition-opacity duration-500"></div>
+                                <div class="glare-container"><div class="glare"></div></div>
+                                
+                                <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                                    <span class="border border-[#00E5FF]/50 text-[#00E5FF] px-8 py-3 rounded-full font-retro text-xs uppercase tracking-widest backdrop-blur-md group-hover:bg-[#00E5FF]/20 transition-colors duration-300 shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+                                        [ LAUNCH GAME ]
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20 opacity-70 hover:opacity-100 transition-opacity duration-500">
                         <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none">
-                            <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-zinc-400 title-font tracking-tighter leading-none drop-shadow-2xl">PROJ 02.</h2>
+                            <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-zinc-400 title-font tracking-tighter leading-none drop-shadow-2xl">PROJ 03.</h2>
                             <p class="text-zinc-400 mt-4 md:mt-6 font-retro text-sm md:text-base leading-relaxed border-l-4 border-zinc-600 pl-4 max-w-lg bg-black/40 backdrop-blur-md p-5 rounded-r-xl shadow-2xl">
                                 • A new experience currently in the works. Check back later for updates.
                             </p>
@@ -356,11 +374,7 @@
                 </div>
             </div>
 
-            <!-- ==========================================
-                 DETAILED PROJECT VIEW (Norot Deep Dive)
-                 ========================================== -->
             <div class="page-view project-norot-view pt-12 px-6 md:px-20 relative pb-40">
-                <!-- Atmospheric Tech Tint -->
                 <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black pointer-events-none"></div>
                 <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20 pointer-events-none mix-blend-overlay"></div>
                 
@@ -372,24 +386,20 @@
                         </button>
                     </div>
 
-                    <!-- 1. HERO SECTION (Retro Tech HUD) -->
                     <div class="min-h-[60vh] flex flex-col md:flex-row items-start justify-between gap-16 mt-4 relative">
                         
-                        <!-- Technical Top Bar (HUD) -->
                         <div class="absolute -top-12 left-0 w-full flex justify-between font-retro text-[10px] md:text-sm text-green-500/50 tracking-[0.2em] border-b border-green-500/20 pb-3 norot-hud">
                             <span>[ SYS.VER: 1.0.4 ]</span>
                             <span class="hidden md:inline">[ STATUS: ACTIVE ]</span>
                             <span>[ MODE: FOCUS ]</span>
                         </div>
 
-                        <!-- Left: Giant Title & Subtitle -->
                         <div class="md:w-[55%] w-full z-20 pt-12 relative">
                             <h3 class="text-[18vw] md:text-[9rem] lg:text-[11rem] font-black uppercase tracking-tighter leading-none font-orbitron text-white drop-shadow-[0_0_40px_rgba(0,255,100,0.15)] norot-title">NOROT.</h3>
                             <p class="font-retro text-green-400 text-lg md:text-2xl tracking-[0.2em] mt-6 uppercase norot-subtitle border-l-2 border-green-500 pl-4">Mindful Phone Launcher</p>
                             <div class="w-32 h-1 bg-gradient-to-r from-green-500 to-transparent mt-10 rounded-full norot-line"></div>
                         </div>
 
-                        <!-- Right: Artistic 40% Coverage -->
                         <div class="md:w-[40%] w-full z-20 relative border-l border-zinc-800/60 pl-8 md:pl-12 py-4 before:absolute before:left-[-1px] before:top-0 before:w-[2px] before:h-32 before:bg-gradient-to-b before:from-green-500 before:to-transparent mt-8 md:mt-20 norot-box">
                             <div class="absolute top-10 right-10 w-64 h-64 bg-green-500/10 blur-[100px] rounded-full pointer-events-none transition-transform duration-700"></div>
 
@@ -437,7 +447,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. THE ANTI-LAUNCHER (Main Screen) -->
                     <div class="min-h-[70vh] flex flex-col md:flex-row items-center justify-between gap-16 mt-20">
                         <div class="md:w-1/2 anim-left z-20">
                             <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Minimalist Base</span>
@@ -463,7 +472,6 @@
                         </div>
                     </div>
 
-                    <!-- 3. COGNITIVE INTERCEPTION (Friction Popups) -->
                     <div class="min-h-[70vh] flex flex-col md:flex-row-reverse items-center justify-between gap-16 mt-16">
                         <div class="md:w-1/2 anim-right z-20">
                             <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Mindful Pauses</span>
@@ -482,7 +490,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <!-- Double Phone Layout -->
                         <div class="md:w-1/2 flex justify-center items-center h-[500px] relative anim-left z-20 perspective-container">
                             <div class="phone-mockup absolute left-4 md:left-12 transform -rotate-[8deg] scale-95 opacity-60 z-10 blur-[2px] group">
                                 <img data-src="assets/images/block-popup.webp" class="w-full h-full object-cover" loading="lazy" alt="Block Popup">
@@ -493,7 +500,6 @@
                         </div>
                     </div>
 
-                    <!-- 4. COLOR DEPRIVATION THERAPY (Grayscale) -->
                     <div class="min-h-[70vh] flex flex-col md:flex-row items-center justify-between gap-16 mt-16">
                         <div class="md:w-1/2 anim-left z-20">
                             <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Visual Neutralization</span>
@@ -512,7 +518,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <!-- Side by Side Phones for Grayscale contrast -->
                         <div class="md:w-1/2 flex justify-center items-center gap-4 anim-right z-20 perspective-container">
                             <div class="phone-mockup group w-[45%]">
                                 <img data-src="assets/images/greyscale-normal.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" alt="Normal Mode">
@@ -525,7 +530,6 @@
                         </div>
                     </div>
 
-                    <!-- 5. THE FORTRESS (Strict Mode) -->
                     <div class="min-h-[70vh] flex flex-col md:flex-row-reverse items-center justify-between gap-16 mt-16">
                         <div class="md:w-1/2 anim-right z-20">
                             <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Stay on Track</span>
@@ -554,7 +558,6 @@
                         </div>
                     </div>
 
-                    <!-- 6. PRE-COMMITMENT ARCHITECTURE (Settings & Scheduling) -->
                     <div class="flex flex-col items-center justify-center gap-12 mt-24 mb-10 text-center max-w-4xl mx-auto z-20 anim-up">
                         <span class="font-retro text-green-500 text-sm tracking-widest uppercase block">// App Configuration</span>
                         <h4 class="text-4xl md:text-6xl font-bold uppercase text-white font-orbitron drop-shadow-lg">Set Your Own Rules</h4>
@@ -563,7 +566,6 @@
                         </p>
                     </div>
 
-                    <!-- App Group Grid & Settings Showcase -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 z-20 mb-32 anim-up perspective-container">
                         <div class="flex justify-center">
                             <div class="phone-mockup group">
@@ -582,14 +584,11 @@
                         </div>
                     </div>
 
-                    <!-- 7. CINEMATIC LANDSCAPE SHOWCASE (The Block popup) -->
                     <div class="w-full relative rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl anim-up z-20 group mb-20 cursor-crosshair">
-                        <!-- Landscape Image -->
                         <div class="aspect-video md:aspect-[21/9] w-full relative overflow-hidden">
                             <img data-src="assets/images/schedule-app-popup.webp" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-1000 group-hover:scale-105" loading="lazy" alt="Schedule App Popup Landscape">
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
                             
-                            <!-- Overlay Text -->
                             <div class="absolute bottom-8 left-8 md:bottom-12 md:left-12 pointer-events-none">
                                 <h4 class="text-3xl md:text-5xl font-bold uppercase text-white font-orbitron drop-shadow-lg flex items-center gap-4">
                                     <svg class="w-8 h-8 md:w-10 md:h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -605,9 +604,6 @@
                 </div>
             </div>
 
-            <!-- ==========================================
-                 IDENTITY VIEW (About Me)
-                 ========================================== -->
             <div class="page-view identity-view pt-20 px-6 md:px-20 relative pb-40">
                 <div class="max-w-6xl mx-auto flex flex-col gap-20">
                     
@@ -652,9 +648,6 @@
                 </div>
             </div>
 
-            <!-- ==========================================
-                 COMMUNICATE VIEW (Contact)
-                 ========================================== -->
             <div class="page-view communicate-view pt-20 px-6 md:px-20 relative pb-40">
                 <div class="max-w-5xl mx-auto flex flex-col gap-20">
                     
@@ -688,10 +681,8 @@
         </div>
     </div>
 
-    <!-- 3. The Masked Layer (Cloned naturally via JS) -->
     <div id="masked-layer"></div>
 
-    <!-- JavaScript Engine -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             

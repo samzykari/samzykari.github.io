@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOLAWS</title>
+  <script type="module" crossorigin src="./assets/index-BVFWT2cI.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-B717aacW.css">
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- ==================== UI OVERLAY ==================== -->
+  <div id="ui-root">
+
+    <!-- MAIN MENU -->
+    <div id="main-menu" class="screen">
+      <div class="menu-content">
+        <h1 class="game-title">NO<span class="accent">LAWS</span></h1>
+        <p class="tagline">Drive Like Nobody's Watching</p>
+        <div class="menu-buttons">
+          <button id="btn-play" class="btn btn-primary">HIT THE GAS!</button>
+          <button id="btn-garage" class="btn">PIMP MY RIDE</button>
+          <button id="btn-settings" class="btn">SETTINGS</button>
+        </div>
+        <div class="menu-stats">
+          🪙 <span id="menu-coins">0</span> coins
+        </div>
+      </div>
+    </div>
+
+    <!-- BIOME SELECT -->
+    <div id="biome-select" class="screen hidden">
+      <div class="menu-content">
+        <h2>PICK YOUR VIBE</h2>
+        <div class="biome-grid">
+          <button class="biome-card" data-biome="modernCity">
+            <div class="biome-preview city"></div>
+            <span>Modern City</span>
+          </button>
+          <button class="biome-card" data-biome="desertCanyon">
+            <div class="biome-preview desert"></div>
+            <span>Desert Canyon</span>
+          </button>
+          <button class="biome-card" data-biome="coastalHighway">
+            <div class="biome-preview coastal"></div>
+            <span>Coastal Highway</span>
+          </button>
+        </div>
+        <button id="btn-biome-back" class="btn btn-secondary">BACK</button>
+      </div>
+    </div>
+
+    <!-- GARAGE -->
+    <div id="garage" class="screen hidden">
+      <div class="garage-layout">
+        <div class="garage-header">
+          <h2>🔧 THE GARAGE</h2>
+          <div class="garage-coins"><span id="garage-coins">0</span> coins</div>
+          <button id="btn-garage-back" class="btn btn-small">BACK</button>
+        </div>
+
+        <div class="garage-categories">
+          <button class="cat-tab active" data-category="dailyTuner">Daily Tuners</button>
+          <button class="cat-tab" data-category="jdmLegend">JDM Legends</button>
+          <button class="cat-tab" data-category="heavyTruck">Heavy Trucks</button>
+          <button class="cat-tab" data-category="supercar">Supercars</button>
+        </div>
+
+        <div class="garage-main">
+          <!-- Vehicle carousel -->
+          <div class="vehicle-carousel">
+            <button id="btn-prev-vehicle" class="carousel-arrow">&lt;</button>
+            <div class="vehicle-info">
+              <h3 id="vehicle-name">—</h3>
+              <p id="vehicle-category">—</p>
+            </div>
+            <button id="btn-next-vehicle" class="carousel-arrow">&gt;</button>
+          </div>
+
+          <!-- Stats + Upgrades -->
+          <div class="upgrade-panel">
+            <div class="stat-row">
+              <label>Engine <small>(Top Speed)</small></label>
+              <div class="stat-bar"><div id="bar-engine" class="stat-fill" style="width:0%"></div></div>
+              <button class="btn-upgrade" data-upgrade="engine">UPGRADE <span class="upgrade-cost"></span></button>
+            </div>
+            <div class="stat-row">
+              <label>Tires <small>(Handling)</small></label>
+              <div class="stat-bar"><div id="bar-tires" class="stat-fill" style="width:0%"></div></div>
+              <button class="btn-upgrade" data-upgrade="tires">UPGRADE <span class="upgrade-cost"></span></button>
+            </div>
+            <div class="stat-row">
+              <label>Chassis <small>(Durability)</small></label>
+              <div class="stat-bar"><div id="bar-chassis" class="stat-fill" style="width:0%"></div></div>
+              <button class="btn-upgrade" data-upgrade="chassis">UPGRADE <span class="upgrade-cost"></span></button>
+            </div>
+            <div class="stat-row">
+              <label>Nitro <small>(Capacity)</small></label>
+              <div class="stat-bar"><div id="bar-nitro" class="stat-fill" style="width:0%"></div></div>
+              <button class="btn-upgrade" data-upgrade="nitro">UPGRADE <span class="upgrade-cost"></span></button>
+            </div>
+          </div>
+
+          <!-- Visual Customization -->
+          <div class="visual-panel">
+            <h4>CUSTOMIZE</h4>
+            <div class="color-row">
+              <label>Paint</label>
+              <input type="color" id="paint-color" value="#ff0000" />
+            </div>
+            <div class="color-row">
+              <label>Underglow</label>
+              <input type="color" id="underglow-color" value="#00ffff" />
+              <label class="toggle">
+                <input type="checkbox" id="underglow-toggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="color-row">
+              <label>Exhaust Flames</label>
+              <label class="toggle">
+                <input type="checkbox" id="exhaust-toggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-select-vehicle" class="btn btn-primary btn-wide">LET'S ROLL!</button>
+      </div>
+    </div>
+
+    <!-- IN-GAME HUD -->
+    <div id="hud" class="screen hidden">
+      <!-- Score + Multiplier -->
+      <div class="hud-top">
+        <div class="hud-score">
+          <span id="hud-score-value">0</span>
+          <span id="hud-multiplier" class="multiplier">x1</span>
+        </div>
+        <div class="hud-rival">
+          <span class="rival-label">RIVAL</span>
+          <div class="rival-bar"><div id="rival-indicator" class="rival-dot"></div></div>
+          <span class="rival-label">YOU</span>
+        </div>
+      </div>
+
+      <!-- Power-up indicator -->
+      <div class="hud-powerup">
+        <div id="hud-powerup-icon" class="powerup-icon hidden"></div>
+        <span id="hud-powerup-timer"></span>
+      </div>
+
+      <!-- Bottom HUD -->
+      <div class="hud-bottom">
+        <div class="hud-speed">
+          <span id="hud-speed-value">0</span>
+          <span class="speed-unit">KM/H</span>
+        </div>
+        <div class="hud-nitro">
+          <div class="nitro-bar"><div id="nitro-fill" class="nitro-fill"></div></div>
+          <span class="nitro-label">NITRO</span>
+        </div>
+        <div id="hud-health" class="hud-health hidden">
+          <!-- Health pips for trucks -->
+        </div>
+        <div class="hud-coins">
+          <span id="hud-coins">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAUSE MENU -->
+    <div id="pause-menu" class="screen hidden">
+      <div class="menu-content">
+        <h2>CHILL...</h2>
+        <div class="menu-buttons">
+          <button id="btn-resume" class="btn btn-primary">BACK TO ACTION!</button>
+          <button id="btn-restart" class="btn">TRY AGAIN</button>
+          <button id="btn-quit" class="btn">BAIL OUT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="game-over" class="screen hidden">
+      <div class="menu-content">
+        <h2>💥 WRECKED!</h2>
+        <div class="go-stats">
+          <div class="go-stat"><span class="go-label">Score</span><span id="go-score">0</span></div>
+          <div class="go-stat"><span class="go-label">Coins</span><span id="go-coins">0</span></div>
+          <div class="go-stat"><span class="go-label">Near Misses</span><span id="go-near-misses">0</span></div>
+          <div class="go-stat"><span class="go-label">Max Combo</span><span id="go-max-combo">x1</span></div>
+          <div class="go-stat"><span class="go-label">Distance</span><span id="go-distance">0m</span></div>
+        </div>
+        <div class="menu-buttons">
+          <button id="btn-retry" class="btn btn-primary">ONE MORE RUN!</button>
+          <button id="btn-to-menu" class="btn">BACK TO BASE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="settings" class="screen hidden">
+      <div class="menu-content">
+        <h2>SETTINGS</h2>
+        <div class="settings-group">
+          <label class="settings-label">DIFFICULTY</label>
+          <div class="difficulty-selector">
+            <button class="diff-btn" data-difficulty="easy">EASY</button>
+            <button class="diff-btn active" data-difficulty="normal">NORMAL</button>
+            <button class="diff-btn" data-difficulty="hard">HARD</button>
+          </div>
+          <p id="diff-description" class="diff-desc">Balanced traffic and challenge.</p>
+        </div>
+        <button id="btn-settings-back" class="btn btn-secondary">BACK</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== MOBILE TOUCH CONTROLS ==================== -->
+  <div id="mobile-controls">
+    <div id="touch-left" class="touch-zone"></div>
+    <div id="touch-right" class="touch-zone"></div>
+    <button id="touch-nitro" class="touch-btn touch-btn-left">NITRO</button>
+    <button id="touch-brake" class="touch-btn touch-btn-center">BRAKE</button>
+    <button id="touch-blast" class="touch-btn touch-btn-right">BLAST</button>
+  </div>
+
+</body>
+</html>
