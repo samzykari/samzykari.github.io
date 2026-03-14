@@ -5,17 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAMZYKARI | Immersive Portfolio</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- GSAP & Three.js for 3D and Scroll Animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Syne, Inter, Orbitron, Space Grotesk, Share Tech Mono, and Oswald -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&family=Share+Tech+Mono&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --gothic-red: #aa0000;
             --glitch-red: #ff3333;
+            /* About Page Light Theme Variables */
+            --about-accent: #f05050;
+            --about-muted: #6e6e73;
         }
 
         body {
@@ -24,6 +31,7 @@
             color: #fff;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
 
         /* Font Classes */
@@ -31,6 +39,7 @@
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
         .font-space { font-family: 'Space Grotesk', sans-serif; }
         .font-retro { font-family: 'Share Tech Mono', monospace; }
+        .font-oswald { font-family: 'Oswald', sans-serif; }
 
         /* --- BACKGROUND IMAGE LAYER --- */
         .bg-image-layer {
@@ -82,7 +91,7 @@
 
         #masked-layer .bg-grid { display: none !important; }
         #masked-layer .glass-panel { background: rgba(0, 0, 0, 0.05) !important; box-shadow: none !important; }
-        
+
         /* PREVENT GAME ENGINE FROM CLONING IN MASK LAYER (Just in case) */
         #masked-layer iframe { display: none !important; }
 
@@ -119,12 +128,10 @@
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease, box-shadow 0.5s ease;
         }
         @media (min-width: 768px) {
-            /* Dim and push back the non-hovered items */
             .widget-container:hover .pop-widget:not(:hover) {
                 opacity: 0.5;
                 transform: scale(0.95);
             }
-            /* Drastically scale and elevate the hovered item */
             .widget-container .pop-widget:hover {
                 transform: scale(1.15) translateY(-15px) !important;
                 z-index: 10;
@@ -132,13 +139,12 @@
             }
         }
 
-        /* --- HORIZONTAL SCROLL & 3D CARDS (Showcase View) --- */
+        /* --- HORIZONTAL SCROLL & 3D CARDS --- */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         
         .perspective-container { perspective: 1500px; }
         
-        /* Floating Animation */
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-15px); }
@@ -147,7 +153,6 @@
             animation: float 6s ease-in-out infinite;
         }
 
-        /* Dynamic JS 3D Card */
         .project-card {
             transform-style: preserve-3d;
             transition: transform 0.1s ease-out, box-shadow 0.4s ease;
@@ -162,7 +167,6 @@
             box-shadow: -20px 40px 80px -10px rgba(255, 51, 51, 0.2), inset 0 0 0 1px rgba(255,255,255,0.3);
         }
 
-        /* Dynamic Glare Effect */
         .glare-container {
             position: absolute;
             inset: 0;
@@ -189,7 +193,6 @@
             -webkit-backdrop-filter: blur(12px);
         }
 
-        /* Custom Phone Mockup classes */
         .phone-mockup {
             width: 100%;
             max-width: 300px;
@@ -207,7 +210,57 @@
             box-shadow: 0 35px 60px -12px rgba(0, 255, 100, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
         }
 
-        /* Hardware Acceleration */
+        /* --- NEW ABOUT ME 3D STYLES --- */
+        .about-content-section {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out, transform 0.8s ease-out;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .about-content-section.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        #about-sec1 { bottom: 4%; left: 4%; transform: translateY(20px); max-width: 320px; }
+        #about-sec1.active { transform: translateY(0); }
+        
+        #about-sec2 { bottom: 4%; right: 4%; text-align: right; transform: translateY(20px); max-width: 320px; }
+        #about-sec2.active { transform: translateY(0); }
+        
+        #about-sec3 { bottom: 4%; left: 4%; transform: translateY(20px); max-width: 400px; }
+        #about-sec3.active { transform: translateY(0); }
+
+        .about-bullet {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--about-accent);
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        #about-sec2 .about-bullet {
+            float: right;
+            margin-right: 0;
+            margin-left: 10px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            #about-sec2 { text-align: left !important; right: auto; left: 4%; }
+            #about-sec2 .about-bullet { float: left; margin-left: 0; margin-right: 10px; }
+        }
+
+        /* Forms & Terminal Inputs */
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 255, 100, 0.2);
+            border-color: rgba(0, 255, 100, 0.5);
+        }
+
         .anim-up, .anim-left, .anim-right, .anim-widget, .anim-showcase {
             will-change: transform, opacity;
             backface-visibility: hidden;
@@ -226,6 +279,7 @@
 </head>
 <body>
 
+    <!-- 1. The SVG Mask Engine -->
     <svg style="width: 0; height: 0; position: absolute;">
         <defs>
             <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
@@ -241,11 +295,62 @@
         </defs>
     </svg>
 
+    <!-- Global Background Image -->
     <div id="global-bg" class="bg-image-layer"></div>
 
+    <!-- ==========================================
+         GLOBAL AUTHENTICATION NODE
+         ========================================== -->
+    <div id="global-auth-node" class="fixed top-6 right-6 md:top-8 md:right-12 z-[100] pointer-events-auto">
+        <!-- Rendered dynamically by JS -->
+    </div>
+
+    <!-- ==========================================
+         AUTHENTICATION MODAL
+         ========================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-zinc-950 border border-zinc-800 p-8 rounded-2xl w-[90%] max-w-md relative shadow-[0_0_50px_rgba(0,255,100,0.1)] transform translate-y-4 transition-transform duration-300" id="auth-modal-content">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 class="font-orbitron text-2xl text-white mb-6 uppercase tracking-wider">System Access</h3>
+            
+            <div class="space-y-4 font-space">
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Email Identity</label>
+                    <input type="email" id="auth-email" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-green-500 focus:outline-none transition-colors font-retro" placeholder="agent@network.com">
+                </div>
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Passcode</label>
+                    <input type="password" id="auth-password" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-green-500 focus:outline-none transition-colors font-retro" placeholder="••••••••">
+                </div>
+                
+                <div class="flex gap-3 pt-2">
+                    <button onclick="handleEmailLogin()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors border border-zinc-700">Log In</button>
+                    <button onclick="handleEmailSignup()" class="flex-1 bg-transparent border border-zinc-700 hover:border-zinc-500 text-zinc-300 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors">Sign Up</button>
+                </div>
+
+                <div class="flex items-center gap-4 my-6">
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                    <span class="text-zinc-600 text-xs font-retro uppercase">External Auth</span>
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                </div>
+
+                <button onclick="firebaseLogin()" class="w-full bg-white text-black hover:bg-gray-200 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-3 shadow-lg">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. The Base Layer -->
     <div id="base-layer">
         <div id="content-source" class="w-full">
             
+            <!-- ==========================================
+                 HOME VIEW (Hero + Widgets)
+                 ========================================== -->
             <div class="page-view home-view pb-40">
                 <section class="h-screen flex flex-col items-center justify-center border-b border-zinc-900 relative overflow-hidden">
                     <div class="absolute inset-0 bg-grid"></div>
@@ -284,6 +389,9 @@
                 </section>
             </div>
 
+            <!-- ==========================================
+                 CREATIONS SHOWCASE VIEW
+                 ========================================== -->
             <div class="page-view creations-showcase-view relative w-full h-screen overflow-hidden bg-transparent">
                 
                 <div class="absolute inset-0 bg-gradient-to-b from-transparent to-red-900/20 pointer-events-none"></div>
@@ -294,7 +402,7 @@
                         <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
                     </button>
                     
-                    <div class="text-right anim-showcase hidden md:block">
+                    <div class="text-right anim-showcase hidden md:block pt-16">
                         <p class="font-mono text-xs text-white tracking-[0.2em] animate-pulse drop-shadow-md">SCROLL HORIZONTALLY</p>
                         <p class="font-mono text-xs text-zinc-400 mt-1">[SHIFT + WHEEL]</p>
                     </div>
@@ -303,7 +411,6 @@
                 <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide items-center perspective-container">
                     
                     <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20">
-                        
                         <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none anim-showcase">
                             <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-white title-font tracking-tighter leading-none drop-shadow-2xl">NOROT.</h2>
                             <p class="text-zinc-200 mt-4 md:mt-6 font-retro text-sm md:text-base leading-relaxed border-l-4 border-[#ff3333] pl-4 max-w-lg bg-black/40 backdrop-blur-md p-5 rounded-r-xl shadow-2xl">
@@ -326,6 +433,7 @@
                         </div>
                     </div>
 
+                    <!-- SLIDE 2: NOLAWS -->
                     <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20">
                         <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none anim-showcase">
                             <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-white title-font tracking-tighter leading-none drop-shadow-[0_0_30px_rgba(0,229,255,0.4)]">NOLAWS.</h2>
@@ -335,7 +443,7 @@
                         </div>
 
                         <div class="floating-wrapper z-20 mt-40 md:mt-32 w-full flex justify-center md:justify-end md:pr-[5%]">
-                            <div onclick="window.open('nolaws/index.html', '_blank')" class="project-card tilt-reset relative w-full max-w-md md:max-w-5xl aspect-video md:aspect-[21/9] bg-zinc-950 rounded-xl cursor-pointer anim-showcase overflow-hidden group shadow-[0_0_50px_rgba(0,229,255,0.1)]">
+                            <div onclick="trackAnalytics('launch_game', {game: 'nolaws'}); window.open('nolaws/index.html', '_blank')" class="project-card tilt-reset relative w-full max-w-md md:max-w-5xl aspect-video md:aspect-[21/9] bg-zinc-950 rounded-xl cursor-pointer anim-showcase overflow-hidden group shadow-[0_0_50px_rgba(0,229,255,0.1)]">
                                 
                                 <img data-src="assets/images/nolaws.webp" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-90 transition-opacity duration-700 mix-blend-screen" loading="lazy" alt="Nolaws Cover">
                                 
@@ -351,6 +459,7 @@
                         </div>
                     </div>
 
+                    <!-- SLIDE 3: CLASSIFIED -->
                     <div class="min-w-full h-full snap-center flex items-center justify-center relative px-6 md:px-20 opacity-70 hover:opacity-100 transition-opacity duration-500">
                         <div class="absolute left-6 md:left-[8%] top-[12%] md:top-[18%] z-10 pointer-events-none">
                             <h2 class="text-7xl md:text-[10rem] font-bold uppercase text-zinc-400 title-font tracking-tighter leading-none drop-shadow-2xl">PROJ 03.</h2>
@@ -374,6 +483,9 @@
                 </div>
             </div>
 
+            <!-- ==========================================
+                 DETAILED PROJECT VIEW (Norot Deep Dive)
+                 ========================================== -->
             <div class="page-view project-norot-view pt-12 px-6 md:px-20 relative pb-40">
                 <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black pointer-events-none"></div>
                 <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20 pointer-events-none mix-blend-overlay"></div>
@@ -387,7 +499,6 @@
                     </div>
 
                     <div class="min-h-[60vh] flex flex-col md:flex-row items-start justify-between gap-16 mt-4 relative">
-                        
                         <div class="absolute -top-12 left-0 w-full flex justify-between font-retro text-[10px] md:text-sm text-green-500/50 tracking-[0.2em] border-b border-green-500/20 pb-3 norot-hud">
                             <span>[ SYS.VER: 1.0.4 ]</span>
                             <span class="hidden md:inline">[ STATUS: ACTIVE ]</span>
@@ -423,7 +534,7 @@
                             </div>
 
                             <div class="norot-stagger flex flex-col sm:flex-row gap-4 relative z-10">
-                                <button class="flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-black/40 border border-zinc-800 text-zinc-400 cursor-not-allowed relative overflow-hidden group/btn backdrop-blur-md">
+                                <button onclick="trackAnalytics('click_locked_button', {platform: 'playstore', project: 'norot'})" class="flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-black/40 border border-zinc-800 text-zinc-400 cursor-not-allowed relative overflow-hidden group/btn backdrop-blur-md">
                                     <svg class="w-5 h-5 transition-transform group-hover/btn:scale-90" fill="currentColor" viewBox="0 0 24 24"><path d="M4 3.73l14.9 8.6-14.9 8.6V3.73zm1.5 2.6v11.34L15.3 12 5.5 6.33z"/></svg>
                                     <span class="font-space font-bold uppercase tracking-wider text-sm">Playstore</span>
                                     <div class="absolute inset-0 bg-red-900/90 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 flex items-center justify-center backdrop-blur-sm">
@@ -433,7 +544,7 @@
                                         </span>
                                     </div>
                                 </button>
-                                <button class="flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-black/40 border border-zinc-800 text-zinc-400 cursor-not-allowed relative overflow-hidden group/btn backdrop-blur-md">
+                                <button onclick="trackAnalytics('click_locked_button', {platform: 'github', project: 'norot'})" class="flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-black/40 border border-zinc-800 text-zinc-400 cursor-not-allowed relative overflow-hidden group/btn backdrop-blur-md">
                                     <svg class="w-5 h-5 transition-transform group-hover/btn:scale-90" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
                                     <span class="font-space font-bold uppercase tracking-wider text-sm">GitHub</span>
                                     <div class="absolute inset-0 bg-red-900/90 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 flex items-center justify-center backdrop-blur-sm">
@@ -454,16 +565,6 @@
                             <p class="font-space text-zinc-300 text-lg leading-relaxed mb-6">
                                 Say goodbye to flashy icons designed to grab your attention. Norot replaces your home screen with a simple, flowing list of text. It's peaceful, clean, and helps you use your phone with purpose.
                             </p>
-                            <ul class="space-y-4 font-retro text-sm text-zinc-400">
-                                <li class="flex items-start gap-3">
-                                    <span class="text-green-500 mt-0.5">►</span> 
-                                    <span><strong>Dynamic Backgrounds:</strong> Smooth, organic gradients create a calm, low-stimulation environment.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="text-green-500 mt-0.5">►</span> 
-                                    <span><strong>Wave App List:</strong> A vertically scrolling list that requires deliberate, intentional action to navigate.</span>
-                                </li>
-                            </ul>
                         </div>
                         <div class="md:w-1/2 flex justify-center anim-right z-20 perspective-container">
                             <div class="phone-mockup group">
@@ -477,18 +578,8 @@
                             <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-4 block">// Mindful Pauses</span>
                             <h4 class="text-4xl md:text-5xl font-bold uppercase mb-6 text-white font-orbitron drop-shadow-lg">The 'Take a Breath' Screen</h4>
                             <p class="font-space text-zinc-300 text-lg leading-relaxed mb-6">
-                                Opening apps out of habit? Norot catches you. When you tap a distracting app, it asks you to wait before letting you in.
+                                Opening apps out of habit? Norot catches you. When you tap a distracting app, it asks you to wait before letting you in. This short pause is usually enough to break the spell.
                             </p>
-                            <ul class="space-y-4 font-retro text-sm text-zinc-400">
-                                <li class="flex items-start gap-3">
-                                    <span class="text-green-500 mt-0.5">►</span> 
-                                    <span><strong>The Friction Delay:</strong> Forces a 10 to 30-second wait before entry. This short pause is usually enough to break the spell and make you realize you don't actually want to scroll.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="text-green-500 mt-0.5">►</span> 
-                                    <span><strong>Emergency Access:</strong> If you absolutely need the app, you can set a strict 15-minute allowance. Once the time is up, the app closes.</span>
-                                </li>
-                            </ul>
                         </div>
                         <div class="md:w-1/2 flex justify-center items-center h-[500px] relative anim-left z-20 perspective-container">
                             <div class="phone-mockup absolute left-4 md:left-12 transform -rotate-[8deg] scale-95 opacity-60 z-10 blur-[2px] group">
@@ -507,16 +598,6 @@
                             <p class="font-space text-zinc-300 text-lg leading-relaxed mb-6">
                                 Apps use bright colors to keep you hooked. Norot can automatically turn your screen black and white. Without color, your phone suddenly becomes a lot less interesting.
                             </p>
-                            <ul class="space-y-4 font-retro text-sm text-zinc-400">
-                                <li class="flex items-start gap-3">
-                                    <span class="text-green-500 mt-0.5">►</span> 
-                                    <span><strong>Automated Triggers:</strong> Set your screen to turn gray at bedtime or after you've used your phone too much during the day.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <span class="text-green-500 mt-0.5">►</span> 
-                                    <span><strong>Allowance Discouragement:</strong> Even if you bypass a block to open an app, your screen stays gray, making it easier to close it when you're done.</span>
-                                </li>
-                            </ul>
                         </div>
                         <div class="md:w-1/2 flex justify-center items-center gap-4 anim-right z-20 perspective-container">
                             <div class="phone-mockup group w-[45%]">
@@ -562,7 +643,7 @@
                         <span class="font-retro text-green-500 text-sm tracking-widest uppercase block">// App Configuration</span>
                         <h4 class="text-4xl md:text-6xl font-bold uppercase text-white font-orbitron drop-shadow-lg">Set Your Own Rules</h4>
                         <p class="font-space text-zinc-300 text-lg leading-relaxed">
-                            Decide exactly how and when you want to use your apps. Group them together, set daily time limits, or create schedules (like 'Only allow Instagram from 6 PM to 8 PM'). Set up your boundaries once, and let Norot enforce them for you.
+                            Decide exactly how and when you want to use your apps. Group them together, set daily time limits, or create schedules. Set up your boundaries once, and let Norot enforce them for you.
                         </p>
                     </div>
 
@@ -584,7 +665,7 @@
                         </div>
                     </div>
 
-                    <div class="w-full relative rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl anim-up z-20 group mb-20 cursor-crosshair">
+                    <div class="w-full relative rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl anim-up z-20 group mb-10 cursor-crosshair">
                         <div class="aspect-video md:aspect-[21/9] w-full relative overflow-hidden">
                             <img data-src="assets/images/schedule-app-popup.webp" class="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-1000 group-hover:scale-105" loading="lazy" alt="Schedule App Popup Landscape">
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none"></div>
@@ -601,56 +682,105 @@
                         </div>
                     </div>
 
+                    <!-- ==========================================
+                         COMMUNITY TERMINAL (REAL FIREBASE BACKEND)
+                         ========================================== -->
+                    <div class="w-full mt-20 z-20 anim-up relative pb-20">
+                        <div class="border-t border-green-900/30 pt-16">
+                            
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+                                <div>
+                                    <span class="font-retro text-green-500 text-sm tracking-widest uppercase mb-2 block">// Field Reports</span>
+                                    <h4 class="text-3xl md:text-4xl font-bold uppercase text-white font-orbitron drop-shadow-lg">System Logs & Feedback</h4>
+                                </div>
+                                <div id="auth-ui-container" class="font-retro hidden md:block">
+                                    <!-- Auth status shown inline here on desktop -->
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <!-- Form Area -->
+                                <div class="lg:col-span-1 bg-black/60 border border-green-900/50 rounded-xl p-6 backdrop-blur-md h-fit shadow-[0_0_30px_rgba(0,255,100,0.05)]">
+                                    <div id="feedback-form-wrapper">
+                                        <!-- Form populated dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Logs/Comments Area -->
+                                <div class="lg:col-span-2 space-y-4" id="logs-container">
+                                    <!-- Real-time Firestore Logs render here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <div class="page-view identity-view pt-20 px-6 md:px-20 relative pb-40">
-                <div class="max-w-6xl mx-auto flex flex-col gap-20">
+            <!-- ==========================================
+                 IDENTITY VIEW (3D About Me)
+                 ========================================== -->
+            <div class="page-view identity-view relative w-full min-h-[400vh]">
+                <!-- 3D WebGL Canvas for this specific view -->
+                <canvas id="about-webgl-canvas" class="fixed top-0 left-0 w-full h-full z-0 outline-none"></canvas>
+                
+                <!-- Fixed UI Overlay for text -->
+                <div id="about-ui-layer" class="fixed top-0 left-0 w-full h-full z-10 pointer-events-none">
                     
-                    <div class="anim-left">
-                        <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
+                    <div class="absolute top-8 left-8 md:top-12 md:left-12 pointer-events-auto z-50">
+                        <button onclick="navigateTo('home-view')" class="text-[var(--about-muted)] hover:text-[var(--about-accent)] font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group bg-[#f5f5f7]/80 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 shadow-sm">
                             <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
                         </button>
                     </div>
+                    
+                    <!-- Progress indicator moved slightly down to avoid global auth button -->
+                    <div class="absolute top-24 right-8 md:top-28 md:right-12 font-oswald text-xl tracking-[0.2em] text-[#1d1d1f] bg-[#f5f5f7]/80 backdrop-blur-md px-4 py-1 rounded-full border border-gray-200 shadow-sm" id="about-progress-text">1 → 3</div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
-                        <div class="md:col-span-2 glass-panel p-10 flex flex-col justify-center anim-up">
-                            <h2 class="text-4xl md:text-5xl font-bold uppercase tracking-tight mb-4 title-font text-white">Samwel // Coder.</h2>
-                            <p class="text-lg text-zinc-300 font-light leading-relaxed">
-                                I'm a university student and coder trying to break into the market. I love computers, coding, electronics, and cars. Honestly, I'm just a curious nerd who tries anything interesting as long as it's fun. Also heavily into anime and gaming.
+                    <!-- Scroll Section 1 -->
+                    <div class="about-content-section active" id="about-sec1">
+                        <h1 class="font-oswald text-5xl md:text-7xl lg:text-[6rem] text-[#1d1d1f] uppercase tracking-[0.1em] leading-[1.1] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">SAMWEL<br>CODER.</h1>
+                        <div class="pointer-events-auto">
+                            <!-- Smaller text, added white halo shadow for readability over dark 3D elements -->
+                            <p class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                                <span class="about-bullet"></span>I'M A UNIVERSITY STUDENT AND CODER TRYING TO BREAK INTO THE MARKET. I LOVE COMPUTERS, CODING, ELECTRONICS, AND CARS. HONESTLY, I'M JUST A CURIOUS NERD WHO TRIES ANYTHING INTERESTING AS LONG AS IT'S FUN.
                             </p>
                         </div>
+                    </div>
 
-                        <div class="glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
-                            <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
-                                <img data-src="assets/images/image_dc1969.webp" alt="Anime & Gaming" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity" loading="lazy">
-                            </div>
-                            <h3 class="text-2xl font-bold title-font text-white z-10 relative">Anime & Gaming</h3>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
-                        </div>
+                    <!-- Scroll Section 2 -->
+                    <div class="about-content-section" id="about-sec2">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">INTERESTS</h2>
+                        <ul class="list-none text-[var(--about-muted)] pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <li class="text-xs md:text-sm mb-3 font-oswald tracking-widest"><span class="about-bullet hidden md:inline-block"></span>AUTOMOTIVE <span class="about-bullet inline-block md:hidden"></span></li>
+                            <li class="text-xs md:text-sm mb-3 font-oswald tracking-widest"><span class="about-bullet hidden md:inline-block"></span>ELECTRONICS & CODE <span class="about-bullet inline-block md:hidden"></span></li>
+                            <li class="text-xs md:text-sm mb-0 font-oswald tracking-widest"><span class="about-bullet hidden md:inline-block"></span>ANIME & GAMING <span class="about-bullet inline-block md:hidden"></span></li>
+                        </ul>
+                    </div>
 
-                        <div class="md:col-span-1 glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
-                            <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
-                                <img data-src="assets/images/image_dc1969.webp" alt="Automotive" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity" loading="lazy">
+                    <!-- Scroll Section 3 -->
+                    <div class="about-content-section" id="about-sec3">
+                        <h2 class="font-oswald text-3xl md:text-4xl lg:text-[3.5rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">DOMAINS</h2>
+                        <div class="flex flex-wrap gap-4 md:gap-6 pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <div class="cursor-default group">
+                                <span class="about-bullet"></span><span class="text-[var(--about-muted)] font-space text-xs md:text-sm border-b border-transparent group-hover:border-[var(--about-accent)] transition-colors pb-1 font-medium tracking-widest uppercase">Web Dev</span>
                             </div>
-                            <h3 class="text-2xl font-bold title-font text-white z-10 relative">Automotive</h3>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
-                        </div>
-
-                        <div class="md:col-span-2 glass-panel relative overflow-hidden group flex items-end p-6 anim-up">
-                            <div class="absolute inset-0 -z-10 group-hover:scale-105 transition-transform duration-700">
-                                <img data-src="assets/images/image_dc1969.webp" alt="Electronics & Code" class="w-full h-full object-cover opacity-40 group-hover:opacity-80 transition-opacity" loading="lazy">
+                            <div class="cursor-default group">
+                                <span class="about-bullet"></span><span class="text-[var(--about-muted)] font-space text-xs md:text-sm border-b border-transparent group-hover:border-[var(--about-accent)] transition-colors pb-1 font-medium tracking-widest uppercase">App Dev</span>
                             </div>
-                            <h3 class="text-2xl font-bold title-font text-white z-10 relative">Electronics & Code</h3>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+                            <div class="cursor-default group">
+                                <span class="about-bullet"></span><span class="text-[var(--about-muted)] font-space text-xs md:text-sm border-b border-transparent group-hover:border-[var(--about-accent)] transition-colors pb-1 font-medium tracking-widest uppercase">Design</span>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
+            <!-- ==========================================
+                 COMMUNICATE VIEW (Contact)
+                 ========================================== -->
             <div class="page-view communicate-view pt-20 px-6 md:px-20 relative pb-40">
                 <div class="max-w-5xl mx-auto flex flex-col gap-20">
-                    
                     <div class="anim-left">
                         <button onclick="navigateTo('home-view')" class="text-zinc-500 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group">
                             <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
@@ -658,19 +788,19 @@
                     </div>
 
                     <div class="flex flex-col gap-10 title-font uppercase font-bold text-4xl md:text-7xl mt-10">
-                        <a href="mailto:samzykari@gmail.com" class="social-link anim-left transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                        <a href="mailto:samzykari@gmail.com" onclick="trackAnalytics('social_click', {platform: 'email'})" class="social-link anim-left transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
                             <span>Email</span>
                             <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">samzykari@gmail.com</span>
                         </a>
-                        <a href="#" class="social-link anim-right transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                        <a href="#" onclick="trackAnalytics('social_click', {platform: 'instagram'})" class="social-link anim-right transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
                             <span>Instagram</span>
                             <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">@_sam.zy._</span>
                         </a>
-                        <a href="#" class="social-link anim-left transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                        <a href="#" onclick="trackAnalytics('social_click', {platform: 'tiktok'})" class="social-link anim-left transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
                             <span>TikTok</span>
                             <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">@samzykari</span>
                         </a>
-                        <a href="#" class="social-link anim-right transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
+                        <a href="#" onclick="trackAnalytics('social_click', {platform: 'twitter'})" class="social-link anim-right transition-all duration-300 border-b border-zinc-800 pb-8 block w-full text-left flex justify-between items-center group">
                             <span>X / Twitter</span>
                             <span class="text-lg md:text-2xl font-mono text-zinc-500 lowercase group-hover:text-white transition-colors">@samzykari</span>
                         </a>
@@ -683,280 +813,685 @@
 
     <div id="masked-layer"></div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
-            const contentSource = document.getElementById('content-source');
-            const maskedLayer = document.getElementById('masked-layer');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-            gsap.registerPlugin(ScrollTrigger);
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWaDFwl37xaER6sACMA5F6p1SiRCghzoQ",
+            authDomain: "samzykari-22819.firebaseapp.com",
+            projectId: "samzykari-22819",
+            storageBucket: "samzykari-22819.firebasestorage.app",
+            messagingSenderId: "936152324226",
+            appId: "1:936152324226:web:d1eba01a43aed3a050fc9b"
+        };
 
-            if (isMobile) {
-                maskedLayer.style.display = 'none';
-                document.querySelector('svg').style.display = 'none';
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app); // ANALYTICS ENGINE STARTED
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // --- GLOBAL ANALYTICS TRACKER ---
+        window.trackAnalytics = function(eventName, eventParams = {}) {
+            try {
+                logEvent(analytics, eventName, eventParams);
+            } catch (e) {
+                console.log("Analytics disabled or blocked.");
             }
+        };
 
-            // --- 3D TILT PHYSICS FOR PROJECT CARDS ---
-            document.querySelectorAll('.project-card').forEach(card => {
-                const glare = card.querySelector('.glare');
-                
-                card.addEventListener('mousemove', e => {
-                    card.classList.remove('tilt-reset');
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    
-                    const rotateX = ((y - centerY) / centerY) * -12; 
-                    const rotateY = ((x - centerX) / centerX) * 12;
-                    
-                    card.style.transform = `perspective(1500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
-                    
-                    if (glare) {
-                        glare.style.left = `${x}px`;
-                        glare.style.top = `${y}px`;
-                        glare.style.opacity = '1';
-                    }
-                });
+        const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+        const contentSource = document.getElementById('content-source');
+        const maskedLayer = document.getElementById('masked-layer');
 
-                card.addEventListener('mouseleave', () => {
-                    card.classList.add('tilt-reset');
-                    card.style.transform = `perspective(1500px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-                    if (glare) glare.style.opacity = '0';
-                });
+        gsap.registerPlugin(ScrollTrigger);
+
+        if (isMobile) {
+            maskedLayer.style.display = 'none';
+            document.querySelector('svg').style.display = 'none';
+        }
+
+        // --- 3D TILT PHYSICS FOR CARDS ---
+        document.querySelectorAll('.project-card').forEach(card => {
+            const glare = card.querySelector('.glare');
+            card.addEventListener('mousemove', e => {
+                card.classList.remove('tilt-reset');
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -12; 
+                const rotateY = ((x - centerX) / centerX) * 12;
+                card.style.transform = `perspective(1500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+                if (glare) { glare.style.left = `${x}px`; glare.style.top = `${y}px`; glare.style.opacity = '1'; }
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.add('tilt-reset');
+                card.style.transform = `perspective(1500px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                if (glare) glare.style.opacity = '0';
+            });
+        });
+
+        // --- ROUTER ---
+        let about3DInitialized = false;
+
+        window.navigateTo = function(targetView) {
+            ScrollTrigger.getAll().forEach(t => t.kill());
+
+            // Track Page View in Analytics
+            trackAnalytics('page_view', {
+                page_path: '/' + targetView,
+                page_title: targetView
             });
 
-            // --- ROUTER & LAZY LOADER ---
-            window.navigateTo = function(targetView) {
+            const isNorot = targetView === 'project-norot-view';
+            const isAbout = targetView === 'identity-view';
+            const isShowcase = targetView === 'creations-showcase-view';
+
+            const bgUrl = isNorot ? "url('assets/images/norot-bg.webp')" : "url('assets/images/image_dc1969.webp')";
+            const bgColorFallback = isNorot ? "#002200" : "#aa0000";
+
+            // Cross-theme Background Logic
+            if (isAbout) {
+                gsap.to("#global-bg", { opacity: 0, duration: 0.3 });
+                gsap.to("body", { backgroundColor: "#f5f5f7", color: "#1d1d1f", duration: 0.5 });
+                if (!isMobile) maskedLayer.style.display = 'none';
                 
-                // Kill previous animations
-                ScrollTrigger.getAll().forEach(t => t.kill());
-
-                // Set up dynamic background mapping
-                const isNorot = targetView === 'project-norot-view';
-                const bgUrl = isNorot ? "url('assets/images/norot-bg.webp')" : "url('assets/images/image_dc1969.webp')";
-                const bgColorFallback = isNorot ? "#002200" : "#aa0000";
-
-                // Smooth background image transition
+                // Fire up Three.js Engine for About Page
+                if (!about3DInitialized && !isMobile) {
+                    initAbout3D();
+                }
+            } else {
                 gsap.to("#global-bg", {
-                    opacity: 0,
-                    duration: 0.2,
+                    opacity: 0, duration: 0.2,
                     onComplete: () => {
                         document.getElementById('global-bg').style.backgroundImage = bgUrl;
-                        if (targetView === 'creations-showcase-view') {
-                            gsap.to("#global-bg", { opacity: 0.4, duration: 0.3 });
-                        } else {
-                            gsap.to("#global-bg", { opacity: isNorot ? 0.3 : 0.15, duration: 0.3 });
-                        }
+                        if (isShowcase) gsap.to("#global-bg", { opacity: 0.4, duration: 0.3 });
+                        else gsap.to("#global-bg", { opacity: isNorot ? 0.3 : 0.15, duration: 0.3 });
                     }
                 });
 
-                // Reset aesthetics based on target page to prevent clashing
-                if(targetView === 'creations-showcase-view') {
-                    gsap.to("body", { backgroundColor: "#000000", duration: 0.5 });
+                if(isShowcase) {
+                    gsap.to("body", { backgroundColor: "#000000", color: "#ffffff", duration: 0.5 });
                     if (!isMobile) maskedLayer.style.display = 'none'; 
                 } else {
-                    gsap.to("body", { backgroundColor: "#000000", duration: 0.5 });
+                    gsap.to("body", { backgroundColor: "#000000", color: "#ffffff", duration: 0.5 });
                     if (!isMobile) {
                         maskedLayer.style.display = 'block';
-                        // MAJOR UPDATE: Set mask text color to white specifically on the Norot page so it doesn't invert
                         const maskTextCol = isNorot ? "#ffffff" : "#000000";
                         const maskBorderCol = isNorot ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.4)";
                         gsap.set("#masked-layer", { "--mask-text": maskTextCol, "--mask-border": maskBorderCol });
                     }
                 }
+            }
 
-                // Switch Pages
-                document.querySelectorAll('.page-view').forEach(el => { el.style.display = 'none'; });
-                const activeView = document.querySelector('.' + targetView);
-                activeView.style.display = 'block';
-                window.scrollTo(0, 0);
+            document.querySelectorAll('.page-view').forEach(el => { el.style.display = 'none'; });
+            const activeView = document.querySelector('.' + targetView);
+            activeView.style.display = 'block';
+            window.scrollTo(0, 0);
 
-                // Lazy load media
-                const lazyMedia = activeView.querySelectorAll('img[data-src], video[data-src], iframe[data-src]');
-                lazyMedia.forEach(media => {
-                    media.src = media.getAttribute('data-src');
-                    media.removeAttribute('data-src');
-                });
+            activeView.querySelectorAll('img[data-src], video[data-src], iframe[data-src]').forEach(media => {
+                media.src = media.getAttribute('data-src'); media.removeAttribute('data-src');
+            });
 
-                // Update Mask
-                if (!isMobile && targetView !== 'creations-showcase-view') {
-                    maskedLayer.innerHTML = '';
-                    const maskBg = document.createElement('div');
-                    maskBg.id = 'mask-bg-image';
-                    maskBg.style.backgroundImage = bgUrl;
-                    maskBg.style.backgroundColor = bgColorFallback;
-                    maskedLayer.appendChild(maskBg);
-                    
-                    const clonedContent = contentSource.cloneNode(true);
-                    clonedContent.id = 'cloned-content';
-                    maskedLayer.appendChild(clonedContent);
-                }
+            if (!isMobile && !isShowcase && !isAbout) {
+                maskedLayer.innerHTML = '';
+                const maskBg = document.createElement('div');
+                maskBg.id = 'mask-bg-image'; maskBg.style.backgroundImage = bgUrl; maskBg.style.backgroundColor = bgColorFallback;
+                maskedLayer.appendChild(maskBg);
+                const clonedContent = contentSource.cloneNode(true);
+                clonedContent.id = 'cloned-content';
+                maskedLayer.appendChild(clonedContent);
+            }
 
-                initAnimations();
+            initAnimations();
 
-                // Specific Scroll/Void effect for Home View
-                if (targetView === 'home-view') {
-                    gsap.to(".home-view .animate-bounce", { opacity: 0, scrollTrigger: { trigger: ".home-view", start: "top top", end: "top -20%", scrub: true }});
-                    gsap.to("#global-bg", { opacity: 0.4, scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
-
-                    if (!isMobile) {
-                        gsap.to("#mask-bg-image", { opacity: 0, scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
-                        gsap.to("#masked-layer", { "--mask-text": "#ffffff", "--mask-border": "rgba(255, 255, 255, 0.1)", scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
-                    }
-                }
-
-                // SPECIFIC NOROT HERO GSAP SEQUENCE 
-                if (targetView === 'project-norot-view') {
-                    const tl = gsap.timeline({ delay: 0.2 });
-                    
-                    tl.fromTo(".norot-nav", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.5 })
-                      .fromTo(".norot-hud span", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, "-=0.3")
-                      .fromTo(".norot-title", { x: -80, opacity: 0, filter: "blur(10px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 1.2, ease: "power3.out" }, "-=0.2")
-                      .fromTo(".norot-subtitle", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.8")
-                      .fromTo(".norot-line", { scaleX: 0, transformOrigin: "left" }, { scaleX: 1, duration: 1, ease: "power2.out" }, "-=0.6")
-                      .fromTo(".norot-box", { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 1.2, ease: "power3.out" }, "-=1")
-                      .fromTo(".norot-stagger", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 }, "-=0.8");
-                }
-                
-                setTimeout(() => { ScrollTrigger.refresh(); }, 150);
-            };
-
-            // --- ANIMATION INITIALIZER ---
-            function initAnimations() {
-                // Intro animation for the Showcase view
-                const showcaseItems = document.querySelectorAll('.creations-showcase-view .anim-showcase');
-                if(showcaseItems.length && document.querySelector('.creations-showcase-view').style.display !== 'none') {
-                    gsap.fromTo(showcaseItems, 
-                        { x: -50, opacity: 0 }, 
-                        { x: 0, opacity: 1, duration: 1.2, ease: "expo.out", stagger: 0.15 }
-                    );
-                }
-
-                if (!isMobile && document.querySelector('.creations-showcase-view').style.display === 'none') {
-                    const clonedContent = document.getElementById('cloned-content');
-                    
-                    function syncAnimation(selector, varsFrom, varsTo) {
-                        const baseElems = contentSource.querySelectorAll(selector);
-                        const cloneElems = clonedContent.querySelectorAll(selector);
-                        
-                        baseElems.forEach((el, index) => {
-                            if (el.closest('.page-view').style.display !== 'none') {
-                                gsap.fromTo([el, cloneElems[index]], varsFrom, { ...varsTo, scrollTrigger: { trigger: el, start: "top 85%" } });
-                            }
-                        });
-                    }
-
-                    syncAnimation('.anim-up', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
-                    syncAnimation('.anim-left', { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
-                    syncAnimation('.anim-right', { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
-
-                    const baseWidgetContainers = contentSource.querySelectorAll('.widget-container');
-                    const cloneWidgetContainers = clonedContent.querySelectorAll('.widget-container');
-
-                    baseWidgetContainers.forEach((container, i) => {
-                        if (container.closest('.page-view').style.display !== 'none') {
-                            const baseItems = Array.from(container.querySelectorAll('.anim-widget'));
-                            const cloneItems = Array.from(cloneWidgetContainers[i].querySelectorAll('.anim-widget'));
-                            const pairedItems = baseItems.map((item, index) => [item, cloneItems[index]]);
-                            
-                            gsap.fromTo(pairedItems, { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: "expo.out", stagger: 0.2, scrollTrigger: { trigger: container, start: "top 75%" }});
-                        }
-                    });
-
-                } else {
-                    // Standard Single Layer Animations
-                    function animateBase(selector, varsFrom, varsTo) {
-                        document.querySelectorAll(selector).forEach((el) => {
-                            if (el.closest('.page-view').style.display !== 'none') {
-                                gsap.fromTo(el, varsFrom, { ...varsTo, scrollTrigger: { trigger: el, start: "top 85%" } });
-                            }
-                        });
-                    }
-
-                    animateBase('.anim-up', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out" });
-                    animateBase('.anim-left', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
-                    animateBase('.anim-right', { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
-
-                    document.querySelectorAll('.widget-container').forEach(container => {
-                        if (container.closest('.page-view').style.display !== 'none') {
-                            gsap.fromTo(container.querySelectorAll('.anim-widget'), { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out", stagger: 0.2, scrollTrigger: { trigger: container, start: "top 75%" }});
-                        }
-                    });
+            if (targetView === 'home-view') {
+                gsap.to(".home-view .animate-bounce", { opacity: 0, scrollTrigger: { trigger: ".home-view", start: "top top", end: "top -20%", scrub: true }});
+                gsap.to("#global-bg", { opacity: 0.4, scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
+                if (!isMobile) {
+                    gsap.to("#mask-bg-image", { opacity: 0, scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
+                    gsap.to("#masked-layer", { "--mask-text": "#ffffff", "--mask-border": "rgba(255, 255, 255, 0.1)", scrollTrigger: { trigger: "#home-widgets", start: "top 85%", end: "top 15%", scrub: true }});
                 }
             }
 
-            // --- FLUID PHYSICS SYSTEM ---
-            if (!isMobile) {
-                const maskGroup = document.getElementById('mask-group');
-                const numCircles = 24; const circles = []; const history = [];
+            if (targetView === 'project-norot-view') {
+                const tl = gsap.timeline({ delay: 0.2 });
+                tl.fromTo(".norot-nav", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.5 })
+                  .fromTo(".norot-hud span", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.1 }, "-=0.3")
+                  .fromTo(".norot-title", { x: -80, opacity: 0, filter: "blur(10px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 1.2, ease: "power3.out" }, "-=0.2")
+                  .fromTo(".norot-subtitle", { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.8")
+                  .fromTo(".norot-line", { scaleX: 0, transformOrigin: "left" }, { scaleX: 1, duration: 1, ease: "power2.out" }, "-=0.6")
+                  .fromTo(".norot-box", { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 1.2, ease: "power3.out" }, "-=1")
+                  .fromTo(".norot-stagger", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 }, "-=0.8");
+            }
+            
+            setTimeout(() => { ScrollTrigger.refresh(); }, 150);
+        };
+
+        function initAnimations() {
+            const showcaseItems = document.querySelectorAll('.creations-showcase-view .anim-showcase');
+            if(showcaseItems.length && document.querySelector('.creations-showcase-view').style.display !== 'none') {
+                gsap.fromTo(showcaseItems, { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out", stagger: 0.15 });
+            }
+
+            if (!isMobile && document.querySelector('.creations-showcase-view').style.display === 'none' && document.querySelector('.identity-view').style.display === 'none') {
+                const clonedContent = document.getElementById('cloned-content');
+                function syncAnimation(selector, varsFrom, varsTo) {
+                    const baseElems = contentSource.querySelectorAll(selector);
+                    const cloneElems = clonedContent.querySelectorAll(selector);
+                    baseElems.forEach((el, index) => {
+                        if (el.closest('.page-view').style.display !== 'none') {
+                            gsap.fromTo([el, cloneElems[index]], varsFrom, { ...varsTo, scrollTrigger: { trigger: el, start: "top 85%" } });
+                        }
+                    });
+                }
+                syncAnimation('.anim-up', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
+                syncAnimation('.anim-left', { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
+                syncAnimation('.anim-right', { x: 80, opacity: 0 }, { x: 0, opacity: 1, duration: 1.2, ease: "expo.out" });
+            } else {
+                function animateBase(selector, varsFrom, varsTo) {
+                    document.querySelectorAll(selector).forEach((el) => {
+                        if (el.closest('.page-view').style.display !== 'none') {
+                            gsap.fromTo(el, varsFrom, { ...varsTo, scrollTrigger: { trigger: el, start: "top 85%" } });
+                        }
+                    });
+                }
+                animateBase('.anim-up', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "expo.out" });
+                animateBase('.anim-left', { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
+                animateBase('.anim-right', { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1, ease: "expo.out" });
+            }
+        }
+
+        // --- FLUID PHYSICS SYSTEM (Home Page Blob) ---
+        if (!isMobile) {
+            const maskGroup = document.getElementById('mask-group');
+            const numCircles = 24; const circles = []; const history = [];
+            for (let i = 0; i < numCircles; i++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('fill', 'white'); maskGroup.appendChild(circle); circles.push(circle);
+                history.push({ x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 });
+            }
+            let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            let lastMouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            let velocity = 0; let currentScale = 0; let targetScale = 0; let idleTimer = 0;
+
+            window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+            window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+
+            function animate() {
+                let dx = mouse.x - lastMouse.x; let dy = mouse.y - lastMouse.y;
+                velocity = Math.sqrt(dx * dx + dy * dy); lastMouse.x = mouse.x; lastMouse.y = mouse.y;
+
+                if (velocity > 0.5) { idleTimer = 0; targetScale = Math.min(1.5, targetScale + 0.05 + (velocity * 0.005)); } 
+                else { idleTimer++; if (idleTimer > 15) { targetScale = Math.max(0.3, targetScale - 0.02); } }
+                
+                currentScale += (targetScale - currentScale) * 0.08;
+                history[0].x += (mouse.x - history[0].x) * 0.15; history[0].y += (mouse.y - history[0].y) * 0.15;
+
+                for (let i = 1; i < numCircles; i++) {
+                    let node = history[i]; let target = history[i-1];
+                    node.vx += (target.x - node.x) * 0.25; node.vy += (target.y - node.y) * 0.25;
+                    node.vx *= 0.55; node.vy *= 0.55; node.x += node.vx; node.y += node.vy;
+                }
+
+                let time = Date.now() * 0.003; let scrollY = window.scrollY;
 
                 for (let i = 0; i < numCircles; i++) {
-                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    circle.setAttribute('fill', 'white'); 
-                    maskGroup.appendChild(circle);
-                    circles.push(circle);
-                    history.push({ x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 });
+                    let baseRadius = Math.max(5, 80 - (i * 3.5)); let pulse = Math.sin(time + (i * 0.5)) * 12;
+                    let finalRadius = Math.max(0, (baseRadius + pulse) * currentScale);
+                    let squirmX = Math.sin(time * 1.5 + i) * 15 * currentScale; let squirmY = Math.cos(time * 1.2 + i * 0.8) * 15 * currentScale;
+                    circles[i].setAttribute('cx', history[i].x + squirmX); circles[i].setAttribute('cy', history[i].y + squirmY + scrollY); circles[i].setAttribute('r', finalRadius);
                 }
+                requestAnimationFrame(animate);
+            }
+            animate(); 
+        }
 
-                let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-                let lastMouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-                let velocity = 0; let currentScale = 0; let targetScale = 0; let idleTimer = 0;
+        // ==========================================
+        // 3D ABOUT ME PAGE ENGINE (Three.js)
+        // ==========================================
+        function initAbout3D() {
+            about3DInitialized = true;
+            const canvas = document.getElementById('about-webgl-canvas');
+            if(!canvas) return;
+            
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color('#f5f5f7');
+            scene.fog = new THREE.FogExp2('#f5f5f7', 0.015);
 
-                window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-                window.addEventListener('touchmove', e => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
 
-                function animate() {
-                    let dx = mouse.x - lastMouse.x;
-                    let dy = mouse.y - lastMouse.y;
-                    velocity = Math.sqrt(dx * dx + dy * dy);
-                    lastMouse.x = mouse.x; lastMouse.y = mouse.y;
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+            dirLight.position.set(10, 20, 10);
+            scene.add(dirLight);
+            const pointLight = new THREE.PointLight(0xffeedd, 1.5, 50);
+            pointLight.position.set(-5, 5, 5);
+            scene.add(pointLight);
 
-                    if (velocity > 0.5) {
-                        idleTimer = 0;
-                        targetScale = Math.min(1.5, targetScale + 0.05 + (velocity * 0.005));
-                    } else {
-                        idleTimer++;
-                        if (idleTimer > 15) { targetScale = Math.max(0.3, targetScale - 0.02); }
-                    }
-                    
-                    currentScale += (targetScale - currentScale) * 0.08;
-                    history[0].x += (mouse.x - history[0].x) * 0.15;
-                    history[0].y += (mouse.y - history[0].y) * 0.15;
+            const textureLoader = new THREE.TextureLoader();
+            const tex1 = textureLoader.load('assets/images/image_dc1969.webp');
 
-                    for (let i = 1; i < numCircles; i++) {
-                        let node = history[i]; let target = history[i-1];
-                        node.vx += (target.x - node.x) * 0.25;
-                        node.vy += (target.y - node.y) * 0.25;
-                        node.vx *= 0.55; node.vy *= 0.55;
-                        node.x += node.vx; node.y += node.vy;
-                    }
+            const floorGeo = new THREE.PlaneGeometry(200, 200);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e5, roughness: 0.15, metalness: 0.1 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2; floor.position.y = -2;
+            scene.add(floor);
 
-                    let time = Date.now() * 0.003; 
-                    let scrollY = window.scrollY;
+            const particlesGeo = new THREE.BufferGeometry();
+            const particlesCount = 700;
+            const posArray = new Float32Array(particlesCount * 3);
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 100;
+                if(i % 3 === 1) posArray[i] = Math.random() * 50 - 2; 
+            }
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMat = new THREE.PointsMaterial({ size: 0.06, color: 0x888888, transparent: true, opacity: 0.3, blending: THREE.NormalBlending });
+            const particleMesh = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particleMesh);
 
-                    for (let i = 0; i < numCircles; i++) {
-                        let baseRadius = Math.max(5, 80 - (i * 3.5));
-                        let pulse = Math.sin(time + (i * 0.5)) * 12;
-                        let finalRadius = Math.max(0, (baseRadius + pulse) * currentScale);
-                        
-                        let squirmX = Math.sin(time * 1.5 + i) * 15 * currentScale;
-                        let squirmY = Math.cos(time * 1.2 + i * 0.8) * 15 * currentScale;
+            const objectsToAnimate = [];
+            const borderMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.1, metalness: 0.3, side: THREE.DoubleSide });
+            const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
 
-                        circles[i].setAttribute('cx', history[i].x + squirmX);
-                        circles[i].setAttribute('cy', history[i].y + squirmY + scrollY);
-                        circles[i].setAttribute('r', finalRadius);
-                    }
-                    requestAnimationFrame(animate);
-                }
-                animate(); 
+            // Scene 1 Object (Made massive and centered)
+            const scene1Group = new THREE.Group();
+            scene1Group.position.set(0, 2, -5);
+            const mainImage = new THREE.Mesh(new THREE.PlaneGeometry(16, 9), new THREE.MeshStandardMaterial({ map: tex1, roughness: 0.1, metalness: 0.1, side: THREE.DoubleSide }));
+            mainImage.position.set(0, 1, 0);
+            const border1 = new THREE.Mesh(new THREE.PlaneGeometry(16.3, 9.3), borderMat); border1.position.set(0, 1, -0.05);
+            const shadow1 = new THREE.Mesh(new THREE.PlaneGeometry(16.3, 9.3), shadowMat); shadow1.position.set(0.3, 0.7, -0.2);
+            scene1Group.add(mainImage, border1, shadow1);
+            objectsToAnimate.push({ mesh: scene1Group, baseY: 2, floatSpeed: 1.5, floatAmplitude: 0.3, floatOffset: 0 });
+            scene.add(scene1Group);
+
+            // Scene 2 Object (Made massive)
+            const scene2Group = new THREE.Group();
+            scene2Group.position.set(25, 2, -15);
+            const scene2Image = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.MeshStandardMaterial({ map: tex1, roughness: 0.1, metalness: 0.1, side: THREE.DoubleSide }));
+            const border2 = new THREE.Mesh(new THREE.PlaneGeometry(14.3, 14.3), borderMat); border2.position.set(0, 0, -0.05);
+            const shadow2 = new THREE.Mesh(new THREE.PlaneGeometry(14.3, 14.3), shadowMat); shadow2.position.set(0.3, -0.3, -0.2);
+            scene2Group.add(scene2Image, border2, shadow2);
+            objectsToAnimate.push({ mesh: scene2Group, baseY: 2, floatSpeed: 1.2, floatAmplitude: 0.4, floatOffset: Math.PI });
+            scene.add(scene2Group);
+
+            // Scene 3 Object (Bigger gallery panels)
+            const scene3Group = new THREE.Group();
+            scene3Group.position.set(50, 2, 0);
+            for(let i=0; i<5; i++) {
+                const angle = (i / 4) * Math.PI - Math.PI/2;
+                const screen = new THREE.Mesh(new THREE.PlaneGeometry(10, 5.6), new THREE.MeshStandardMaterial({ map: tex1, roughness: 0.1, metalness: 0.1, side: THREE.DoubleSide }));
+                screen.position.set(Math.sin(angle) * 14, 0, -Math.cos(angle) * 14);
+                screen.lookAt(scene3Group.position);
+                const sBorder = new THREE.Mesh(new THREE.PlaneGeometry(10.2, 5.8), borderMat); sBorder.position.set(0, 0, -0.05);
+                const sShadow = new THREE.Mesh(new THREE.PlaneGeometry(10.2, 5.8), shadowMat); sShadow.position.set(0.2, -0.2, -0.1);
+                screen.add(sBorder, sShadow);
+                scene3Group.add(screen);
+                objectsToAnimate.push({ mesh: screen, baseY: screen.position.y, floatSpeed: 1+Math.random(), floatAmplitude: 0.2, floatOffset: i });
+            }
+            scene.add(scene3Group);
+
+            const waypoints = [
+                { camPos: new THREE.Vector3(0, 1.5, 6), lookAt: scene1Group.position.clone() },
+                { camPos: new THREE.Vector3(20, 2, -6), lookAt: scene2Group.position.clone() },
+                { camPos: new THREE.Vector3(50, 1.5, 12), lookAt: scene3Group.position.clone() }
+            ];
+            camera.position.copy(waypoints[0].camPos);
+            camera.lookAt(waypoints[0].lookAt);
+
+            let scrollPercent = 0; let targetScrollPercent = 0;
+            let mouseX = 0; let mouseY = 0; let targetMouseX = 0; let targetMouseY = 0;
+
+            window.addEventListener('mousemove', e => {
+                targetMouseX = (e.clientX - window.innerWidth/2) * 0.001;
+                targetMouseY = (e.clientY - window.innerHeight/2) * 0.001;
+            });
+
+            function updateScroll() {
+                if (document.querySelector('.identity-view').style.display === 'none') return;
+                const h = document.documentElement;
+                const b = document.body;
+                targetScrollPercent = (h.scrollTop||b.scrollTop) / ((h.scrollHeight||b.scrollHeight) - h.clientHeight);
+                if(isNaN(targetScrollPercent)) targetScrollPercent = 0;
+                targetScrollPercent = Math.max(0, Math.min(1, targetScrollPercent));
             }
 
-            // --- START APP ---
-            navigateTo('home-view');
+            window.addEventListener('scroll', updateScroll);
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                updateScroll();
+            });
+
+            const sections = [document.getElementById('about-sec1'), document.getElementById('about-sec2'), document.getElementById('about-sec3')];
+            const progressText = document.getElementById('about-progress-text');
+            const currentCamPos = new THREE.Vector3().copy(waypoints[0].camPos);
+            const currentLookAt = new THREE.Vector3().copy(waypoints[0].lookAt);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (document.querySelector('.identity-view').style.display === 'none') return;
+
+                scrollPercent += (targetScrollPercent - scrollPercent) * 0.08;
+                
+                const numSegments = waypoints.length - 1;
+                const scaledScroll = scrollPercent * numSegments; 
+                const segmentIndex = Math.min(Math.floor(scaledScroll), numSegments - 1);
+                const segmentProgress = scaledScroll - segmentIndex;
+
+                const wpStart = waypoints[segmentIndex];
+                const wpEnd = waypoints[segmentIndex + 1];
+
+                currentCamPos.lerpVectors(wpStart.camPos, wpEnd.camPos, segmentProgress);
+                currentLookAt.lerpVectors(wpStart.lookAt, wpEnd.lookAt, segmentProgress);
+
+                mouseX += (targetMouseX - mouseX) * 0.05;
+                mouseY += (targetMouseY - mouseY) * 0.05;
+
+                camera.position.x = currentCamPos.x + (mouseX * 5);
+                camera.position.y = currentCamPos.y + (mouseY * 2);
+                camera.position.z = currentCamPos.z;
+                camera.lookAt(currentLookAt.x - (mouseX * 2), currentLookAt.y - (mouseY * 2), currentLookAt.z);
+
+                const time = Date.now() * 0.001;
+                objectsToAnimate.forEach(obj => {
+                    if (obj.baseY !== undefined) obj.mesh.position.y = obj.baseY + Math.sin(time * obj.floatSpeed + obj.floatOffset) * obj.floatAmplitude;
+                });
+                particleMesh.rotation.y += 0.0005;
+
+                let activeSectionIndex = 0;
+                if (scrollPercent > 0.33 && scrollPercent < 0.66) activeSectionIndex = 1;
+                else if (scrollPercent >= 0.66) activeSectionIndex = 2;
+
+                sections.forEach((sec, index) => {
+                    if (index === activeSectionIndex) {
+                        if(!sec.classList.contains('active')) sec.classList.add('active');
+                    } else {
+                        if(sec.classList.contains('active')) sec.classList.remove('active');
+                    }
+                });
+
+                if (progressText) progressText.innerText = `${activeSectionIndex + 1} → ${waypoints.length}`;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // ==========================================
+        // REAL FIREBASE BACKEND INTEGRATION
+        // ==========================================
+        let currentUser = null;
+        let systemLogs = [];
+
+        function timeAgo(dateInput) {
+            if (!dateInput) return "Just now";
+            const date = dateInput.toDate();
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + "y ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + "mo ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + "d ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + "h ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + "m ago";
+            return Math.floor(seconds) + "s ago";
+        }
+
+        // Handle Global UI Updates (Button & Modal toggles)
+        function updateGlobalAuthUI(user) {
+            const globalNode = document.getElementById('global-auth-node');
+            if (user) {
+                // Fetch actual photo or generate retro fallback
+                const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email || 'User')}&background=0D0D0D&color=00FF66&bold=true`;
+                
+                globalNode.innerHTML = `
+                    <div class="group relative cursor-pointer flex items-center gap-3 bg-black/40 backdrop-blur-md border border-zinc-800 p-2 pr-4 rounded-full hover:border-zinc-500 transition-colors shadow-lg" onclick="toggleUserMenu()">
+                        <img src="${avatarUrl}" alt="Profile" class="w-8 h-8 rounded-full border border-zinc-700 object-cover bg-zinc-900">
+                        <span class="font-space text-xs font-bold text-white uppercase hidden md:inline-block">${user.name}</span>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="user-dropdown" class="absolute top-full right-0 mt-2 w-48 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl opacity-0 pointer-events-none transform -translate-y-2 transition-all duration-200 overflow-hidden">
+                            <button onclick="firebaseLogout()" class="w-full text-left px-4 py-3 text-red-500 hover:bg-zinc-900 font-retro text-xs tracking-widest uppercase transition-colors">Disconnect</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                globalNode.innerHTML = `
+                    <button onclick="openAuthModal()" class="bg-white/90 backdrop-blur-sm text-black hover:bg-white font-space font-bold text-xs uppercase tracking-widest px-6 py-3 rounded-full transition-all shadow-lg hover:scale-105 border border-white/20">
+                        Initiate Connection
+                    </button>
+                `;
+            }
+        }
+
+        window.toggleUserMenu = function() {
+            const dropdown = document.getElementById('user-dropdown');
+            if(dropdown) {
+                if(dropdown.classList.contains('opacity-0')) {
+                    dropdown.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+                    dropdown.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                } else {
+                    dropdown.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+                    dropdown.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+                }
+            }
+        };
+
+        window.openAuthModal = function() {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('auth-modal-content');
+            modal.classList.remove('hidden');
+            // Trigger reflow for animation
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-4');
+        };
+
+        window.closeAuthModal = function() {
+            const modal = document.getElementById('auth-modal');
+            const content = document.getElementById('auth-modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.add('translate-y-4');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        // Firebase Authenticators
+        window.handleEmailLogin = function() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            if(!email || !pass) { alert("Credentials required."); return; }
+            
+            signInWithEmailAndPassword(auth, email, pass).then(() => {
+                trackAnalytics('login', { method: 'email' });
+                closeAuthModal();
+            }).catch(e => {
+                alert("Access Denied: " + e.message);
+            });
+        };
+
+        window.handleEmailSignup = function() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            if(!email || !pass) { alert("Credentials required."); return; }
+            
+            createUserWithEmailAndPassword(auth, email, pass).then(() => {
+                trackAnalytics('sign_up', { method: 'email' });
+                closeAuthModal();
+            }).catch(e => {
+                alert("Registration Failed: " + e.message);
+            });
+        };
+
+        window.firebaseLogin = function() {
+            signInWithPopup(auth, provider).then(() => {
+                trackAnalytics('login', { method: 'google' });
+                closeAuthModal();
+            }).catch((error) => {
+                console.error("Login failed:", error);
+                alert("Connection failed. Please try again.");
+            });
+        };
+
+        window.firebaseLogout = function() {
+            signOut(auth).catch((error) => {
+                console.error("Logout failed:", error);
+            });
+        };
+
+        // Listener for all Auth State Changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = {
+                    name: user.displayName || user.email.split('@')[0],
+                    uid: user.uid,
+                    photoURL: user.photoURL,
+                    email: user.email
+                };
+            } else {
+                currentUser = null;
+            }
+            updateGlobalAuthUI(user);
+            renderFeedbackUI();
         });
+
+        // Real-time Database Tracker for Norot terminal
+        const q = query(collection(db, "reviews"), orderBy("timestamp", "desc"));
+        onSnapshot(q, (snapshot) => {
+            systemLogs = [];
+            snapshot.forEach((doc) => {
+                systemLogs.push({ id: doc.id, ...doc.data() });
+            });
+            renderFeedbackUI(); 
+        });
+
+        window.submitLog = async function() {
+            const textInput = document.getElementById('log-text');
+            const typeInput = document.getElementById('log-type');
+            
+            if (textInput.value.trim() === "") {
+                alert("Log cannot be empty.");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "TRANSMITTING...";
+
+            try {
+                await addDoc(collection(db, "reviews"), {
+                    user: currentUser.name,
+                    uid: currentUser.uid,
+                    type: typeInput.value,
+                    text: textInput.value,
+                    timestamp: serverTimestamp() 
+                });
+                
+                trackAnalytics('submit_feedback', { type: typeInput.value });
+                textInput.value = ""; 
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                alert("Failed to transmit data. Check database rules.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Transmit Data";
+            }
+        };
+
+        function renderFeedbackUI() {
+            const authContainer = document.getElementById('auth-ui-container');
+            const formWrapper = document.getElementById('feedback-form-wrapper');
+            const logsContainer = document.getElementById('logs-container');
+            
+            if(!authContainer) return; // Prevent errors on pages without the terminal
+            
+            if (currentUser) {
+                authContainer.innerHTML = `<span class="text-green-400">[ STATUS: AUTHORIZED ]</span>`;
+                
+                formWrapper.innerHTML = `
+                    <h5 class="font-orbitron font-bold text-white mb-4">Post Field Report</h5>
+                    <select id="log-type" class="w-full bg-black/50 border border-green-900/50 text-green-400 font-retro p-3 rounded-lg mb-4 cursor-pointer">
+                        <option value="Review">General Review</option>
+                        <option value="Bug">Bug Report</option>
+                        <option value="Feature">Feature Request</option>
+                    </select>
+                    <textarea id="log-text" rows="4" class="w-full bg-black/50 border border-green-900/50 text-zinc-300 font-space p-3 rounded-lg mb-4 resize-none placeholder-zinc-600 focus:outline-none focus:border-green-500" placeholder="Detail your experience or issues here..."></textarea>
+                    <button id="submit-btn" onclick="submitLog()" class="w-full bg-green-900/20 hover:bg-green-500/20 border border-green-500/50 text-green-400 font-retro py-3 rounded-lg transition-colors uppercase tracking-widest">Transmit Data</button>
+                `;
+            } else {
+                authContainer.innerHTML = `<span class="text-red-500 animate-pulse">[ CONNECTION REQUIRED ]</span>`;
+                
+                formWrapper.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center py-8">
+                        <svg class="w-12 h-12 text-zinc-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <p class="font-retro text-zinc-500 mb-6">Authentication required to post to system logs.</p>
+                        <button onclick="openAuthModal()" class="border border-green-500/50 text-green-400 hover:bg-green-500/10 font-retro px-6 py-2 rounded transition-colors uppercase tracking-widest flex items-center gap-3 mx-auto">
+                            Initiate Connection
+                        </button>
+                    </div>
+                `;
+            }
+
+            if (logsContainer) {
+                logsContainer.innerHTML = '';
+                if (systemLogs.length === 0) {
+                    logsContainer.innerHTML = `<p class="text-zinc-600 font-retro p-4 border border-zinc-800/50 rounded-xl bg-black/30">No logs found in database. Be the first.</p>`;
+                } else {
+                    systemLogs.forEach(log => {
+                        let badgeColor = log.type === 'Bug' ? 'text-red-400 border-red-900/50 bg-red-900/10' : 
+                                         log.type === 'Feature' ? 'text-blue-400 border-blue-900/50 bg-blue-900/10' : 
+                                         'text-green-400 border-green-900/50 bg-green-900/10';
+
+                        let displayDate = timeAgo(log.timestamp);
+
+                        logsContainer.innerHTML += `
+                            <div class="bg-black/40 border border-zinc-800/60 rounded-xl p-5 backdrop-blur-sm hover:border-green-900/50 transition-colors">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded bg-zinc-900 flex items-center justify-center border border-zinc-800">
+                                            <span class="font-orbitron font-bold text-zinc-500">${log.user.charAt(0).toUpperCase()}</span>
+                                        </div>
+                                        <div>
+                                            <div class="font-retro text-zinc-300 text-sm">${log.user}</div>
+                                            <div class="font-space text-zinc-600 text-xs">${displayDate}</div>
+                                        </div>
+                                    </div>
+                                    <span class="font-retro text-[10px] px-2 py-1 rounded border ${badgeColor} uppercase tracking-widest">${log.type}</span>
+                                </div>
+                                <p class="font-space text-zinc-400 text-sm leading-relaxed pl-11">
+                                    ${log.text}
+                                </p>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        }
+
+        // Initialize UI on load
+        updateGlobalAuthUI(null);
+
+        // --- START APP ---
+        navigateTo('home-view');
     </script>
 </body>
 </html>
