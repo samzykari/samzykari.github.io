@@ -4,11 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NOLAWS</title>
-  <script type="module" crossorigin src="./assets/index-BVFWT2cI.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-B717aacW.css">
+  <script type="module" crossorigin src="./assets/index-5s3Qhbad.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BE1tBxB5.css">
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
+
+  <!-- ==================== LOADING SCREEN ==================== -->
+  <div id="loading-screen">
+    <div class="loading-card">
+      <div class="loading-title">LOADING</div>
+      <div id="loading-status" class="loading-status">Loading assets 0/0</div>
+      <div class="loading-bar">
+        <div id="loading-bar-fill" class="loading-bar-fill"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== UI OVERLAY ==================== -->
   <div id="ui-root">
@@ -20,12 +31,133 @@
         <p class="tagline">Drive Like Nobody's Watching</p>
         <div class="menu-buttons">
           <button id="btn-play" class="btn btn-primary">HIT THE GAS!</button>
+          <button id="btn-multiplayer" class="btn">MULTIPLAYER</button>
           <button id="btn-garage" class="btn">PIMP MY RIDE</button>
           <button id="btn-settings" class="btn">SETTINGS</button>
         </div>
         <div class="menu-stats">
           🪙 <span id="menu-coins">0</span> coins
         </div>
+      </div>
+    </div>
+
+    <!-- MODE SELECT -->
+    <div id="mode-select" class="screen hidden">
+      <div class="menu-content">
+        <h2>CHOOSE YOUR MODE</h2>
+        <div class="mode-grid">
+          <button class="mode-card" data-mode="freeRoam">
+            <h3>Free Roam</h3>
+            <p>Chill drive, relaxed traffic.</p>
+          </button>
+          <button class="mode-card" data-mode="timeTrial">
+            <h3>Time Trial</h3>
+            <p>Max distance before the timer runs out.</p>
+          </button>
+          <button class="mode-card" data-mode="trafficMayhem">
+            <h3>Traffic Mayhem</h3>
+            <p>Dense traffic, big near-miss score.</p>
+          </button>
+          <button class="mode-card" data-mode="deliveryRush">
+            <h3>Delivery Rush</h3>
+            <p>Hit checkpoints to extend time.</p>
+          </button>
+          <button class="mode-card" data-mode="bossChase">
+            <h3>Boss Chase</h3>
+            <p>Catch the rival before it escapes.</p>
+          </button>
+          <button class="mode-card" data-mode="coneSmash">
+            <h3>Cone Smash</h3>
+            <p>Smash cones for bonus points.</p>
+          </button>
+        </div>
+        <button id="btn-mode-back" class="btn btn-secondary">BACK</button>
+      </div>
+    </div>
+
+    <!-- MULTIPLAYER MENU -->
+    <div id="multiplayer-menu" class="screen hidden">
+      <div class="menu-content">
+        <h2>1V1 MULTIPLAYER</h2>
+        <p class="tagline">Peer-to-peer, no servers</p>
+        <div class="mp-grid">
+          <div class="mp-panel">
+            <h3>Host Game</h3>
+            <button id="btn-mp-host" class="btn btn-primary">CREATE LOBBY</button>
+            <div class="mp-host-id">Room Code: <span id="mp-host-id">—</span></div>
+          </div>
+          <div class="mp-panel">
+            <h3>Join Game</h3>
+            <input id="mp-join-id" class="mp-input" type="text" placeholder="Enter Room Code" />
+            <button id="btn-mp-join" class="btn">CONNECT</button>
+          </div>
+        </div>
+        <div class="mp-quick-row">
+          <button id="btn-mp-quick" class="btn btn-secondary">QUICK MATCH</button>
+        </div>
+        <div id="mp-status" class="mp-status">Idle</div>
+        <button id="btn-mp-back" class="btn btn-secondary">BACK</button>
+      </div>
+    </div>
+
+    <!-- MULTIPLAYER LOBBY -->
+    <div id="multiplayer-lobby" class="screen hidden">
+      <div class="menu-content mp-lobby">
+        <div class="mp-lobby-header">
+          <h2>MULTIPLAYER LOBBY</h2>
+          <div id="mp-lobby-status" class="mp-status">Waiting for player...</div>
+        </div>
+
+        <div class="mp-lobby-grid">
+          <div class="mp-lobby-panel">
+            <h3>Player 1</h3>
+            <div id="mp-local-car" class="mp-car-card">
+              <div class="mp-car-name" id="mp-local-car-name">—</div>
+              <div class="mp-car-meta" id="mp-local-car-meta">—</div>
+              <div class="mp-car-color" id="mp-local-car-color"></div>
+            </div>
+            <button id="btn-mp-ready" class="btn btn-primary">READY</button>
+            <div id="mp-local-ready" class="mp-ready">Not Ready</div>
+          </div>
+
+          <div class="mp-lobby-center">
+            <h3>Mode</h3>
+            <select id="mp-lobby-mode" class="mp-input">
+              <option value="classicRace">Classic Race</option>
+              <option value="duel">Duel</option>
+              <option value="powerUpDuel">Power-Up Duel</option>
+              <option value="crashLimit">Crash Limit Roam</option>
+            </select>
+            <label id="mp-crash-limit-wrap" class="mp-limit">
+              Crash Limit
+              <input id="mp-crash-limit" class="mp-input" type="number" min="3" max="50" value="10" />
+            </label>
+            <div id="mp-countdown-label" class="mp-countdown-label">Waiting for both players...</div>
+          </div>
+
+          <div class="mp-lobby-panel">
+            <h3>Player 2</h3>
+            <div id="mp-remote-car" class="mp-car-card">
+              <div class="mp-car-name" id="mp-remote-car-name">—</div>
+              <div class="mp-car-meta" id="mp-remote-car-meta">—</div>
+              <div class="mp-car-color" id="mp-remote-car-color"></div>
+            </div>
+            <div id="mp-remote-ready" class="mp-ready">Not Ready</div>
+          </div>
+        </div>
+
+        <div class="menu-buttons mp-lobby-actions">
+          <button id="btn-mp-lobby-back" class="btn">BACK TO MENU</button>
+          <button id="btn-mp-disconnect" class="btn btn-secondary">DISCONNECT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MULTIPLAYER COUNTDOWN -->
+    <div id="multiplayer-countdown" class="screen hidden">
+      <div class="mp-countdown">
+        <div id="mp-countdown-value" class="mp-countdown-value">3</div>
+        <div class="mp-countdown-sub">Get ready...</div>
       </div>
     </div>
 
@@ -64,7 +196,7 @@
           <button class="cat-tab active" data-category="dailyTuner">Daily Tuners</button>
           <button class="cat-tab" data-category="jdmLegend">JDM Legends</button>
           <button class="cat-tab" data-category="heavyTruck">Heavy Trucks</button>
-          <button class="cat-tab" data-category="supercar">Supercars</button>
+          <button class="cat-tab" data-category="raceCar">Race Cars</button>
         </div>
 
         <div class="garage-main">
@@ -150,6 +282,16 @@
       <div class="hud-powerup">
         <div id="hud-powerup-icon" class="powerup-icon hidden"></div>
         <span id="hud-powerup-timer"></span>
+        <div class="powerup-slots">
+          <span id="hud-powerup-slot-1" class="powerup-slot"></span>
+          <span id="hud-powerup-slot-2" class="powerup-slot"></span>
+        </div>
+      </div>
+
+      <!-- Mode status -->
+      <div class="hud-mode">
+        <div id="hud-mode-title" class="mode-title"></div>
+        <div id="hud-mode-status" class="mode-status"></div>
       </div>
 
       <!-- Bottom HUD -->
@@ -187,6 +329,7 @@
     <div id="game-over" class="screen hidden">
       <div class="menu-content">
         <h2>💥 WRECKED!</h2>
+        <div id="go-result" class="go-result"></div>
         <div class="go-stats">
           <div class="go-stat"><span class="go-label">Score</span><span id="go-score">0</span></div>
           <div class="go-stat"><span class="go-label">Coins</span><span id="go-coins">0</span></div>
@@ -214,6 +357,27 @@
           </div>
           <p id="diff-description" class="diff-desc">Balanced traffic and challenge.</p>
         </div>
+        <div class="settings-group">
+          <label class="settings-label">AUDIO</label>
+          <div class="volume-group">
+            <div class="volume-row">
+              <span>Master Volume</span>
+              <input id="volume-master" type="range" min="0" max="1" step="0.01" />
+            </div>
+            <div class="volume-row">
+              <span>Music Volume</span>
+              <input id="volume-music" type="range" min="0" max="1" step="0.01" />
+            </div>
+            <div class="volume-row">
+              <span>SFX Volume</span>
+              <input id="volume-sfx" type="range" min="0" max="1" step="0.01" />
+            </div>
+            <div class="volume-row">
+              <span>Engine Volume</span>
+              <input id="volume-engine" type="range" min="0" max="1" step="0.01" />
+            </div>
+          </div>
+        </div>
         <button id="btn-settings-back" class="btn btn-secondary">BACK</button>
       </div>
     </div>
@@ -229,5 +393,6 @@
     <button id="touch-blast" class="touch-btn touch-btn-right">BLAST</button>
   </div>
 
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </body>
 </html>
