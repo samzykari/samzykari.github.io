@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMZYKARI | Field Notes</title>
+    <base href="/">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/site.css">
+    <style>
+        body[data-page="insights"] {
+            background: #f8f9fb;
+            color: #171717;
+        }
+
+        body[data-page="insights"] #global-bg,
+        body[data-page="insights"] #masked-layer {
+            display: none !important;
+        }
+
+        .page-shell {
+            max-width: 1340px;
+            margin: 0 auto;
+        }
+
+        .search-input,
+        .search-select {
+            background: #fff;
+            border: 1px solid rgba(23, 23, 23, 0.12);
+            color: #171717;
+            outline: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .search-input:focus,
+        .search-select:focus {
+            border-color: rgba(23, 23, 23, 0.35);
+            box-shadow: 0 0 0 4px rgba(23, 23, 23, 0.05);
+        }
+
+        .chip {
+            border: 1px solid rgba(23, 23, 23, 0.10);
+            background: rgba(255, 255, 255, 0.9);
+            color: #4b4b45;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .chip:hover,
+        .chip.active {
+            background: #f2f2f0;
+            border-color: rgba(23, 23, 23, 0.16);
+            color: #111111;
+        }
+
+        .result-row {
+            background: transparent;
+            border-bottom: 1px solid rgba(23, 23, 23, 0.08);
+            border-radius: 0;
+            transition: background 0.15s ease;
+        }
+
+        .result-row:hover,
+        .result-row.active {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .result-title { color: #111111; }
+
+        .result-row:hover .result-title {
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 0.22em;
+        }
+
+        .panel,
+        .search-box,
+        .summary-box {
+            background: rgba(255, 255, 255, 0.84);
+            border: 1px solid rgba(23, 23, 23, 0.08);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+</head>
+<body data-page="insights" class="min-h-screen text-[#171717]">
+    <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+            <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 60 -30" result="goo" />
+            </filter>
+            <mask id="blob-mask" maskContentUnits="userSpaceOnUse">
+                <rect x="-10000" y="-10000" width="20000" height="100000" fill="black" />
+                <g filter="url(#goo)" id="mask-group"></g>
+            </mask>
+        </defs>
+    </svg>
+
+    <div id="global-bg" class="bg-image-layer"></div>
+    <div id="global-auth-node" class="fixed top-6 right-6 md:top-8 md:right-12 z-[100] pointer-events-auto"></div>
+
+    <div id="auth-modal" class="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-white border border-black/10 p-8 rounded-3xl w-[90%] max-w-md relative shadow-[0_24px_80px_rgba(0,0,0,0.12)] transform translate-y-4 transition-transform duration-300" id="auth-modal-content">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-black transition-colors">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 class="font-[Syne] text-2xl text-black mb-6 uppercase tracking-wider">System Access</h3>
+            <div class="space-y-4 font-[Inter]">
+                <div>
+                    <label class="block text-neutral-500 text-xs mb-1 uppercase tracking-widest font-semibold">Email Identity</label>
+                    <input type="email" id="auth-email" class="w-full bg-white border border-black/10 rounded-2xl p-3 text-black focus:border-black/30 focus:outline-none transition-colors" placeholder="agent@network.com">
+                </div>
+                <div>
+                    <label class="block text-neutral-500 text-xs mb-1 uppercase tracking-widest font-semibold">Passcode</label>
+                    <input type="password" id="auth-password" class="w-full bg-white border border-black/10 rounded-2xl p-3 text-black focus:border-black/30 focus:outline-none transition-colors" placeholder="••••••••">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="handleEmailLogin()" class="flex-1 bg-black hover:bg-neutral-800 text-white py-3 rounded-2xl font-semibold uppercase tracking-wider text-sm transition-colors">Log In</button>
+                    <button onclick="handleEmailSignup()" class="flex-1 bg-white border border-black/10 hover:border-black/30 text-neutral-700 py-3 rounded-2xl font-semibold uppercase tracking-wider text-sm transition-colors">Sign Up</button>
+                </div>
+                <div class="flex items-center gap-4 my-6">
+                    <div class="flex-1 border-t border-black/10"></div>
+                    <span class="text-neutral-400 text-xs uppercase tracking-wider">External Auth</span>
+                    <div class="flex-1 border-t border-black/10"></div>
+                </div>
+                <button onclick="firebaseLogin()" class="w-full bg-neutral-100 text-black hover:bg-neutral-200 py-3 rounded-2xl font-semibold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="content-source" class="w-full">
+        <main class="page-shell px-5 md:px-8 lg:px-10 py-5 md:py-7 pb-16 md:pb-20">
+            <section class="text-center pt-10 md:pt-14">
+                <div class="flex items-center justify-center text-sm">
+                    <p class="text-[11px] uppercase tracking-[0.28em] text-neutral-400">Field Notes Archive</p>
+                </div>
+
+                <div class="mt-12 md:mt-20">
+                    <h1 class="font-[Syne] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-none">
+                        Notes, guides, and writing worth finding again.
+                    </h1>
+                    <p class="mt-5 text-sm md:text-base text-neutral-500 font-[Inter]">Search research, guides, and journal entries</p>
+                </div>
+
+                <div class="mx-auto mt-10 max-w-3xl search-box rounded-full px-4 py-3 flex items-center gap-3">
+                    <svg class="h-5 w-5 shrink-0 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+                    <input id="query-input" class="search-input w-full rounded-full px-2 py-2 text-sm md:text-base border-0 shadow-none" type="search" placeholder="Search notes, tags, or phrases" autocomplete="off">
+                    <button id="clear-query" class="text-xs uppercase tracking-[0.18em] text-neutral-500 hover:text-black transition-colors">Clear</button>
+                </div>
+
+                <div class="mt-5 flex flex-wrap items-center justify-center gap-2" id="filter-chips"></div>
+
+                <div class="mt-5 flex flex-wrap items-center justify-center gap-3 text-xs text-neutral-500 font-[Inter]">
+                    <p id="results-summary">Loading results...</p>
+                    <span class="text-black/15">•</span>
+                    <select id="sort-select" class="search-select rounded-full px-4 py-2 text-xs md:text-sm">
+                        <option value="relevance">Sort by relevance</option>
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                        <option value="title">Title A-Z</option>
+                    </select>
+                </div>
+
+                <div class="mt-10 flex items-center justify-center gap-4 text-sm text-neutral-500 font-[Inter]">
+                    <p id="metric-total">00 entries</p>
+                    <span class="text-black/15">|</span>
+                    <p id="metric-visible">00 visible</p>
+                </div>
+            </section>
+
+            <section class="mt-14 grid gap-10 lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.82fr)] items-start">
+                <div class="panel rounded-[2rem] p-5 md:p-6">
+                    <div id="results-list"></div>
+                    <div id="no-results" class="hidden py-10 text-center">
+                        <p class="text-[11px] uppercase tracking-[0.24em] text-neutral-400">No results</p>
+                        <h2 class="mt-3 text-2xl font-[Syne] font-semibold">Try a broader search.</h2>
+                        <p class="mt-3 text-sm leading-7 text-neutral-500 font-[Inter]">Switch filters, change the sort order, or clear the query.</p>
+                    </div>
+                </div>
+
+                <aside class="lg:sticky lg:top-8 space-y-4">
+                    <div class="summary-box rounded-[1.75rem] p-5 md:p-6">
+                        <p class="text-[10px] uppercase tracking-[0.24em] text-neutral-400">Selected note</p>
+                        <h2 id="detail-title" class="mt-3 text-3xl font-[Syne] font-semibold leading-tight">Choose a result</h2>
+                        <p id="detail-meta" class="mt-2 text-[11px] uppercase tracking-[0.18em] text-neutral-400 font-medium">Details appear here</p>
+                        <p id="detail-summary" class="mt-4 text-sm md:text-base leading-7 text-[#333] font-[Inter]"></p>
+                        <div class="mt-6 grid grid-cols-2 gap-3">
+                            <div class="rounded-2xl bg-white border border-black/10 p-4">
+                                <p class="text-[10px] uppercase tracking-[0.18em] text-neutral-400">Type</p>
+                                <p id="detail-type" class="mt-2 text-sm font-medium">—</p>
+                            </div>
+                            <div class="rounded-2xl bg-white border border-black/10 p-4">
+                                <p class="text-[10px] uppercase tracking-[0.18em] text-neutral-400">Updated</p>
+                                <p id="detail-date" class="mt-2 text-sm font-medium">—</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-[1.75rem] bg-white border border-black/10 p-5 md:p-6">
+                        <p class="text-[10px] uppercase tracking-[0.24em] text-neutral-400">Quick filters</p>
+                        <div class="mt-4 flex flex-wrap gap-2" id="filter-shortcuts"></div>
+                    </div>
+                </aside>
+            </section>
+        </main>
+    </div>
+
+    <div id="masked-layer"></div>
+
+    <script>
+        (() => {
+            const entries = [
+                {
+                    id: 'linux-vga-1080p',
+                    title: 'A Linux VGA Survival Guide',
+                    type: 'Guide',
+                    date: '2026-04-02',
+                    summary: 'A friendly walkthrough for fixing a VGA Linux setup, from the emergency window hack to GRUB, Xorg, LightDM, and startup scripts.',
+                    tags: ['linux', 'vga', '1080p'],
+                    category: 'guide',
+                    featured: true,
+                    detailPage: '/insights/linux-vga-1080p/',
+                },
+                {
+                    id: 'local-ai-voice-assistant',
+                    title: 'Building a Gapless, Local AI Voice Assistant',
+                    type: 'Project',
+                    date: '2026-03-28',
+                    summary: 'A weekend Fedora project for a private offline voice assistant using Ollama, Kokoro-82M, and a threaded Python bridge.',
+                    tags: ['ai', 'voice', 'fedora', 'ollama', 'tts'],
+                    category: 'tool',
+                    featured: true,
+                    detailPage: '/insights/local-ai-voice-assistant/',
+                },
+            ];
+
+            const categories = [
+                { value: 'all', label: 'All' },
+                { value: 'guide', label: 'Guides' },
+                { value: 'research', label: 'Research' },
+                { value: 'journal', label: 'Journals' },
+                { value: 'tip', label: 'Tips' },
+                { value: 'tool', label: 'Tools' },
+            ];
+
+            const shortcuts = ['ai', 'voice', 'fedora', 'ollama', 'tts'];
+
+            const state = {
+                query: '',
+                sort: 'relevance',
+                category: 'all',
+                selectedId: entries[0].id,
+            };
+
+            const els = {
+                input: document.getElementById('query-input'),
+                sort: document.getElementById('sort-select'),
+                chips: document.getElementById('filter-chips'),
+                shortcuts: document.getElementById('filter-shortcuts'),
+                results: document.getElementById('results-list'),
+                resultsSummary: document.getElementById('results-summary'),
+                totalMetric: document.getElementById('metric-total'),
+                visibleMetric: document.getElementById('metric-visible'),
+                noResults: document.getElementById('no-results'),
+                clearButton: document.getElementById('clear-query'),
+                detailTitle: document.getElementById('detail-title'),
+                detailMeta: document.getElementById('detail-meta'),
+                detailSummary: document.getElementById('detail-summary'),
+                detailType: document.getElementById('detail-type'),
+                detailDate: document.getElementById('detail-date'),
+            };
+
+            const formatDate = (value) => new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit', year: 'numeric' }).format(new Date(`${value}T00:00:00`));
+            const tokenize = (value) => value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+
+            const scoreEntry = (entry, terms) => {
+                if (!terms.length) return entry.featured ? 10 : 1;
+                const haystack = [entry.title, entry.summary, entry.type, entry.category, ...entry.tags].join(' ').toLowerCase();
+                return terms.reduce((score, term) => {
+                    if (entry.title.toLowerCase().includes(term)) return score + 8;
+                    if (entry.tags.some((tag) => tag.includes(term))) return score + 5;
+                    if (haystack.includes(term)) return score + 2;
+                    return score;
+                }, entry.featured ? 4 : 0);
+            };
+
+            const getVisibleEntries = () => {
+                const terms = tokenize(state.query);
+                const filtered = entries.filter((entry) => {
+                    if (state.category !== 'all' && entry.category !== state.category) return false;
+                    if (!terms.length) return true;
+                    const haystack = [entry.title, entry.summary, entry.type, entry.category, ...entry.tags].join(' ').toLowerCase();
+                    return terms.every((term) => haystack.includes(term));
+                });
+
+                return [...filtered].sort((a, b) => {
+                    switch (state.sort) {
+                        case 'newest':
+                            return new Date(b.date) - new Date(a.date);
+                        case 'oldest':
+                            return new Date(a.date) - new Date(b.date);
+                        case 'title':
+                            return a.title.localeCompare(b.title);
+                        default: {
+                            const diff = scoreEntry(b, terms) - scoreEntry(a, terms);
+                            return diff !== 0 ? diff : new Date(b.date) - new Date(a.date);
+                        }
+                    }
+                });
+            };
+
+            const renderChips = () => {
+                els.chips.innerHTML = categories.map((item) => `
+                    <button type="button" data-category="${item.value}" class="chip rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em] ${item.value === state.category ? 'active' : ''}">${item.label}</button>
+                `).join('');
+
+                els.chips.querySelectorAll('[data-category]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        state.category = button.dataset.category;
+                        render();
+                    });
+                });
+            };
+
+            const renderShortcuts = () => {
+                els.shortcuts.innerHTML = shortcuts.map((item) => `
+                    <button type="button" class="chip rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em]" data-shortcut="${item}">${item}</button>
+                `).join('');
+
+                els.shortcuts.querySelectorAll('[data-shortcut]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        state.query = button.dataset.shortcut;
+                        els.input.value = state.query;
+                        render();
+                    });
+                });
+            };
+
+            const renderDetail = (entry) => {
+                if (!entry) return;
+                els.detailTitle.textContent = entry.title;
+                els.detailMeta.textContent = `${entry.type} · ${formatDate(entry.date)} · ${entry.category}`;
+                els.detailSummary.textContent = entry.summary;
+                els.detailType.textContent = entry.type;
+                els.detailDate.textContent = formatDate(entry.date);
+            };
+
+            const renderResults = () => {
+                const visible = getVisibleEntries();
+                els.totalMetric.textContent = `${String(entries.length).padStart(2, '0')} entries`;
+                els.visibleMetric.textContent = `${String(visible.length).padStart(2, '0')} visible`;
+                els.resultsSummary.textContent = visible.length
+                    ? `${visible.length} result${visible.length === 1 ? '' : 's'} for ${state.query || 'all topics'}`
+                    : 'No results match the current query';
+
+                els.noResults.classList.toggle('hidden', visible.length > 0);
+
+                if (visible.length) {
+                    const selected = visible.find((entry) => entry.id === state.selectedId) || visible[0];
+                    if (selected.id !== state.selectedId) state.selectedId = selected.id;
+                    renderDetail(selected);
+                } else {
+                    els.detailTitle.textContent = 'No matching note';
+                    els.detailMeta.textContent = 'Try a broader search';
+                    els.detailSummary.textContent = 'No entries matched the current search. Clear the query or change the filter to continue.';
+                    els.detailType.textContent = '—';
+                    els.detailDate.textContent = '—';
+                }
+
+                els.results.innerHTML = visible.map((entry, index) => {
+                    const wrapperTag = entry.detailPage ? 'a' : 'button';
+                    const wrapperAttrs = entry.detailPage ? `href="${entry.detailPage}"` : 'type="button"';
+
+                    return `
+                    <${wrapperTag} ${wrapperAttrs} data-id="${entry.id}" class="result-row ${entry.id === state.selectedId ? 'active' : ''} w-full px-1 py-5 md:py-6 text-left">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-[11px] font-semibold text-neutral-400">${String(index + 1).padStart(2, '0')}</span>
+                                <span class="rounded-full border border-black/10 bg-[#f6f5f1] px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-neutral-500 font-medium">${entry.type}</span>
+                            </div>
+                            <span class="text-[11px] uppercase tracking-[0.18em] text-neutral-400">${formatDate(entry.date)}</span>
+                        </div>
+                        <h3 class="result-title mt-4 text-xl md:text-2xl font-semibold leading-tight font-[Syne]">${entry.title}</h3>
+                        <p class="mt-2 text-sm md:text-base leading-7 text-neutral-500 font-[Inter]">${entry.summary}</p>
+                    </${wrapperTag}>
+                `;}).join('');
+
+                els.results.querySelectorAll('button[data-id]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        state.selectedId = button.dataset.id;
+                        render();
+                    });
+                });
+            };
+
+            const render = () => {
+                renderChips();
+                renderResults();
+            };
+
+            renderShortcuts();
+            render();
+
+            els.input.addEventListener('input', (event) => {
+                state.query = event.target.value;
+                render();
+            });
+
+            els.sort.addEventListener('change', (event) => {
+                state.sort = event.target.value;
+                render();
+            });
+
+            els.clearButton.addEventListener('click', () => {
+                state.query = '';
+                els.input.value = '';
+                render();
+                els.input.focus();
+            });
+        })();
+    </script>
+
+    <script type="module" src="/assets/site.js"></script>
+</body>
+</html>

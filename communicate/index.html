@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMZYKARI | Contact</title>
+    <base href="/">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP for Scroll Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Google Fonts: Syne, Inter, Orbitron, Space Grotesk, Share Tech Mono, and Oswald -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&family=Share+Tech+Mono&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body data-page="communicate">
+
+    <!-- 1. The SVG Mask Engine -->
+    <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+            <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 60 -30" result="goo" />
+            </filter>
+            <mask id="blob-mask" maskContentUnits="userSpaceOnUse">
+                <rect x="-10000" y="-10000" width="20000" height="100000" fill="black" />
+                <g filter="url(#goo)" id="mask-group"></g>
+            </mask>
+        </defs>
+    </svg>
+
+    <!-- Global Background Image -->
+    <div id="global-bg" class="bg-image-layer"></div>
+
+    <!-- ==========================================
+         GLOBAL AUTHENTICATION NODE
+         ========================================== -->
+    <div id="global-auth-node" class="fixed top-6 right-6 md:top-8 md:right-12 z-[100] pointer-events-auto">
+        <!-- Rendered dynamically by JS -->
+    </div>
+
+    <!-- ==========================================
+         AUTHENTICATION MODAL
+         ========================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-zinc-950 border border-zinc-800 p-8 rounded-2xl w-[90%] max-w-md relative shadow-[0_0_50px_rgba(0,255,100,0.1)] transform translate-y-4 transition-transform duration-300" id="auth-modal-content">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 class="font-orbitron text-2xl text-white mb-6 uppercase tracking-wider">System Access</h3>
+
+            <div class="space-y-4 font-space">
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Email Identity</label>
+                    <input type="email" id="auth-email" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-zinc-500 focus:outline-none transition-colors font-retro" placeholder="agent@network.com">
+                </div>
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Passcode</label>
+                    <input type="password" id="auth-password" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-zinc-500 focus:outline-none transition-colors font-retro" placeholder="••••••••">
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button onclick="handleEmailLogin()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors border border-zinc-700">Log In</button>
+                    <button onclick="handleEmailSignup()" class="flex-1 bg-transparent border border-zinc-700 hover:border-zinc-500 text-zinc-300 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors">Sign Up</button>
+                </div>
+
+                <div class="flex items-center gap-4 my-6">
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                    <span class="text-zinc-600 text-xs font-retro uppercase">External Auth</span>
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                </div>
+
+                <button onclick="firebaseLogin()" class="w-full bg-white text-black hover:bg-gray-200 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-3 shadow-lg">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. The Base Layer -->
+    <div id="base-layer">
+        <div id="content-source" class="w-full">
+
+            <!-- ==========================================
+                 COMMUNICATE / CONTACT VIEW
+                 ========================================== -->
+            <div class="communicate-view relative w-full min-h-screen px-6 md:px-12 py-20 overflow-hidden">
+                
+                <!-- Subtle background gradient -->
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-900/10 to-transparent pointer-events-none"></div>
+
+                <!-- Return home button -->
+                <div class="absolute top-8 left-8 md:top-12 md:left-12 z-50">
+                    <button onclick="navigateTo('home-view')" class="text-zinc-400 hover:text-white font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group anim-up">
+                        <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
+                    </button>
+                </div>
+
+                <div class="max-w-6xl mx-auto relative z-10">
+                    
+                    <!-- Main Title Section -->
+                    <div class="mb-14 md:mb-20 text-center anim-up relative">
+                        <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] bg-[radial-gradient(circle,_rgba(255,255,255,0.08)_0%,_transparent_65%)] blur-3xl pointer-events-none"></div>
+                        <h1 class="text-5xl md:text-7xl lg:text-[7.5rem] font-bold uppercase tracking-tight relative z-10 leading-none title-font mb-5">
+                            CONTACT HUB
+                        </h1>
+                        <p class="text-zinc-300 tracking-[0.18em] font-space text-xs md:text-sm uppercase">Direct channels, project inquiries, and quick responses.</p>
+                    </div>
+
+                    <!-- Contact Grid Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+
+                        <!-- Direct Channel Widgets -->
+                        <div class="lg:col-span-7 anim-up" style="animation-delay: 0.12s">
+                            <div class="glass-panel p-6 md:p-8 h-full border border-zinc-700/40 relative overflow-hidden">
+                                <div class="absolute -top-24 -right-20 w-64 h-64 bg-[radial-gradient(circle,_rgba(255,255,255,0.1)_0%,_transparent_70%)] blur-2xl pointer-events-none"></div>
+                                <div class="flex items-center justify-between mb-6 relative z-10">
+                                    <h2 class="text-2xl md:text-3xl font-bold uppercase tracking-wide font-oswald text-white">Direct Channels</h2>
+                                    <span class="px-3 py-1 rounded-full border border-zinc-600 text-zinc-300 text-[10px] font-space tracking-[0.18em] uppercase">Live</span>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
+                                    <a href="mailto:samzykari@gmail.com" class="group rounded-2xl border border-zinc-700 bg-zinc-900/60 p-4 hover:border-zinc-400 hover:bg-zinc-800/70 transition-all duration-300 hover:-translate-y-1">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://cdn.simpleicons.org/gmail/EA4335" alt="Gmail" class="w-7 h-7">
+                                            <div>
+                                                <p class="text-zinc-500 text-[11px] uppercase tracking-[0.16em] font-space">Email</p>
+                                                <p class="text-white font-medium">samzykari@gmail.com</p>
+                                            </div>
+                                        </div>
+                                    </a>
+
+                                    <a href="https://www.instagram.com/_sam.zy._/" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-zinc-700 bg-zinc-900/60 p-4 hover:border-zinc-400 hover:bg-zinc-800/70 transition-all duration-300 hover:-translate-y-1">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://cdn.simpleicons.org/instagram/E4405F" alt="Instagram" class="w-7 h-7">
+                                            <div>
+                                                <p class="text-zinc-500 text-[11px] uppercase tracking-[0.16em] font-space">Instagram</p>
+                                                <p class="text-white font-medium">@_sam.zy._</p>
+                                            </div>
+                                        </div>
+                                    </a>
+
+                                    <a href="https://www.tiktok.com/@samzykari" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-zinc-700 bg-zinc-900/60 p-4 hover:border-zinc-400 hover:bg-zinc-800/70 transition-all duration-300 hover:-translate-y-1">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="TikTok" class="w-7 h-7">
+                                            <div>
+                                                <p class="text-zinc-500 text-[11px] uppercase tracking-[0.16em] font-space">TikTok</p>
+                                                <p class="text-white font-medium">@samzykari</p>
+                                            </div>
+                                        </div>
+                                    </a>
+
+                                    <a href="https://github.com/samzykari" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-zinc-700 bg-zinc-900/60 p-4 hover:border-zinc-400 hover:bg-zinc-800/70 transition-all duration-300 hover:-translate-y-1">
+                                        <div class="flex items-center gap-3">
+                                            <img src="https://cdn.simpleicons.org/github/FFFFFF" alt="GitHub" class="w-7 h-7">
+                                            <div>
+                                                <p class="text-zinc-500 text-[11px] uppercase tracking-[0.16em] font-space">GitHub</p>
+                                                <p class="text-white font-medium">samzykari</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message Widget -->
+                        <div class="lg:col-span-5 anim-up" style="animation-delay: 0.2s">
+                            <div class="glass-panel p-6 md:p-8 h-full border border-zinc-700/40 flex flex-col relative overflow-hidden">
+                                <div class="absolute -bottom-16 -left-16 w-56 h-56 bg-[radial-gradient(circle,_rgba(255,255,255,0.08)_0%,_transparent_70%)] blur-2xl pointer-events-none"></div>
+                                <h2 class="text-2xl md:text-3xl font-bold uppercase tracking-wide font-oswald mb-5 text-white relative z-10">Message Me</h2>
+
+                                <form class="space-y-3 flex-1 flex flex-col relative z-10" onsubmit="return false;">
+                                    <input id="contact-name" type="text" placeholder="Your Name" class="w-full bg-zinc-900/70 border border-zinc-700 rounded-xl p-3 text-white placeholder-zinc-500 font-space text-sm focus:border-zinc-400 focus:outline-none transition-colors">
+                                    <input id="contact-email" type="email" placeholder="your@email.com" class="w-full bg-zinc-900/70 border border-zinc-700 rounded-xl p-3 text-white placeholder-zinc-500 font-space text-sm focus:border-zinc-400 focus:outline-none transition-colors">
+                                    <textarea id="contact-message" placeholder="Say hello..." rows="5" class="w-full bg-zinc-900/70 border border-zinc-700 rounded-xl p-3 text-white placeholder-zinc-500 font-space text-sm focus:border-zinc-400 focus:outline-none transition-colors resize-none"></textarea>
+
+                                    <button id="contact-submit-btn" type="button" onclick="submitContactMessage()" class="mt-auto bg-white text-black hover:bg-zinc-200 py-3 rounded-xl font-bold uppercase tracking-[0.14em] text-xs transition-all duration-300 shadow-lg hover:translate-y-[-2px]">
+                                        Send Message
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collaboration Widgets -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 anim-up" style="animation-delay: 0.3s">
+                        <div class="glass-panel p-6 border border-zinc-700/40 rounded-2xl hover:border-zinc-400 transition-colors">
+                            <h3 class="text-lg font-bold uppercase tracking-wide font-oswald mb-2 text-zinc-100">Freelance</h3>
+                            <p class="text-zinc-400 font-space text-sm">Web & App development, interactive experiences, and custom builds.</p>
+                        </div>
+                        <div class="glass-panel p-6 border border-zinc-700/40 rounded-2xl hover:border-zinc-400 transition-colors">
+                            <h3 class="text-lg font-bold uppercase tracking-wide font-oswald mb-2 text-zinc-100">Collaborations</h3>
+                            <p class="text-zinc-400 font-space text-sm">Open to creators, designers, and product teams building cool stuff.</p>
+                        </div>
+                        <div class="glass-panel p-6 border border-zinc-700/40 rounded-2xl hover:border-zinc-400 transition-colors">
+                            <h3 class="text-lg font-bold uppercase tracking-wide font-oswald mb-2 text-zinc-100">Sponsorships</h3>
+                            <p class="text-zinc-400 font-space text-sm">Pitch opportunities aligned with tech, design, and gaming culture.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="masked-layer"></div>
+
+    <script type="module" src="/assets/site.js"></script>
+</body>
+</html>

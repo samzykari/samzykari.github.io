@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMZYKARI | Creations</title>
+    <base href="/">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP for Scroll Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Google Fonts: Syne, Inter, Orbitron, Space Grotesk, Share Tech Mono, and Oswald -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&family=Share+Tech+Mono&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body data-page="creations">
+
+    <!-- 1. The SVG Mask Engine -->
+    <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+            <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 60 -30" result="goo" />
+            </filter>
+            <mask id="blob-mask" maskContentUnits="userSpaceOnUse">
+                <rect x="-10000" y="-10000" width="20000" height="100000" fill="black" />
+                <g filter="url(#goo)" id="mask-group"></g>
+            </mask>
+        </defs>
+    </svg>
+
+    <!-- Global Background Image -->
+    <div id="global-bg" class="bg-image-layer"></div>
+
+    <!-- ==========================================
+         GLOBAL AUTHENTICATION NODE
+         ========================================== -->
+    <div id="global-auth-node" class="fixed top-6 right-6 md:top-8 md:right-12 z-[100] pointer-events-auto">
+        <!-- Rendered dynamically by JS -->
+    </div>
+
+    <!-- ==========================================
+         AUTHENTICATION MODAL
+         ========================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-zinc-950 border border-zinc-800 p-8 rounded-2xl w-[90%] max-w-md relative shadow-[0_0_50px_rgba(0,255,100,0.1)] transform translate-y-4 transition-transform duration-300" id="auth-modal-content">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 class="font-orbitron text-2xl text-white mb-6 uppercase tracking-wider">System Access</h3>
+
+            <div class="space-y-4 font-space">
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Email Identity</label>
+                    <input type="email" id="auth-email" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-green-500 focus:outline-none transition-colors font-retro" placeholder="agent@network.com">
+                </div>
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Passcode</label>
+                    <input type="password" id="auth-password" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-green-500 focus:outline-none transition-colors font-retro" placeholder="••••••••">
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button onclick="handleEmailLogin()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors border border-zinc-700">Log In</button>
+                    <button onclick="handleEmailSignup()" class="flex-1 bg-transparent border border-zinc-700 hover:border-zinc-500 text-zinc-300 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors">Sign Up</button>
+                </div>
+
+                <div class="flex items-center gap-4 my-6">
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                    <span class="text-zinc-600 text-xs font-retro uppercase">External Auth</span>
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                </div>
+
+                <button onclick="firebaseLogin()" class="w-full bg-white text-black hover:bg-gray-200 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-3 shadow-lg">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. The Base Layer -->
+    <div id="base-layer">
+        <div id="content-source" class="w-full">
+
+            <!-- ==========================================
+                 CREATIONS SHOWCASE VIEW (Vertical)
+                 ========================================== -->
+            <div class="creations-showcase-view relative w-full min-h-screen bg-transparent overflow-x-hidden">
+                <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_0%,_rgba(255,255,255,0.07)_0%,_transparent_45%),radial-gradient(circle_at_80%_100%,_rgba(255,255,255,0.05)_0%,_transparent_40%)]"></div>
+
+                <div class="sticky top-0 z-40 bg-black/55 backdrop-blur-lg border-b border-zinc-900/70">
+                    <div class="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+                        <button onclick="navigateTo('home-view')" class="text-zinc-400 hover:text-white font-space text-xs uppercase tracking-[0.18em] transition-colors flex items-center gap-3 group">
+                            <span class="group-hover:-translate-x-1 transition-transform">←</span> Return Home
+                        </button>
+                        <span class="text-zinc-500 font-space text-[11px] uppercase tracking-[0.2em]">Creations Portfolio</span>
+                    </div>
+                </div>
+
+                <div class="snap-y snap-mandatory">
+                    <section class="creation-section min-h-[100svh] snap-start px-6 md:px-12 lg:px-20 pt-16 md:pt-24 pb-10 md:pb-12 flex items-center">
+                        <div class="w-full max-w-6xl mx-auto">
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end">
+                                <div class="lg:col-span-8 anim-left">
+                                    <p class="text-zinc-400 font-space text-xs tracking-[0.22em] uppercase">Creations / Software Portfolio</p>
+                                    <h1 class="mt-4 text-5xl md:text-8xl font-bold title-font text-zinc-100 tracking-tight leading-[0.88]">
+                                        Building Tools<br>
+                                        People Actually Use.
+                                    </h1>
+                                    <p class="mt-6 max-w-3xl text-zinc-300 font-space text-sm md:text-lg leading-relaxed">
+                                        This is where I ship software. Real projects, real trade-offs, and lots of iteration from rough prototype to usable product. My focus stays practical: smooth UX, reliable logic, and features that solve an actual problem.
+                                    </p>
+                                    <div class="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl">
+                                        <div class="rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3">
+                                            <p class="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-space">Now Shipping</p>
+                                            <p class="mt-1 text-zinc-100 font-semibold font-space">Nolay</p>
+                                        </div>
+                                        <div class="rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3">
+                                            <p class="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-space">Playable Build</p>
+                                            <p class="mt-1 text-zinc-100 font-semibold font-space">Nolaws</p>
+                                        </div>
+                                        <div class="rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3">
+                                            <p class="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-space">In Production</p>
+                                            <p class="mt-1 text-zinc-100 font-semibold font-space">Norot</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="lg:col-span-4 anim-right">
+                                    <div class="rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5 md:p-6 backdrop-blur-sm">
+                                        <p class="text-zinc-500 font-space text-[11px] uppercase tracking-[0.2em]">Current Build Stack</p>
+                                        <div class="mt-4 space-y-3 text-zinc-200 font-space text-sm leading-relaxed">
+                                            <p><span class="text-zinc-400">Android:</span> everyday mobile workflows and performance-minded features.</p>
+                                            <p><span class="text-zinc-400">Flutter:</span> shared UI systems with clean cross-platform behavior.</p>
+                                            <p><span class="text-zinc-400">Web Frontend:</span> interactive product surfaces and project showcases.</p>
+                                        </div>
+                                        <div class="mt-5 pt-4 border-t border-zinc-800 text-xs text-zinc-400 font-space leading-relaxed">
+                                            Scroll down to see each project, what it solves, and where it is in the build cycle.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="creation-section min-h-[100svh] snap-start relative overflow-hidden">
+                        <div class="creation-media absolute top-0 right-0 w-full md:w-[62%] h-full">
+                            <img src="/creations/nolay/assets/main.jpg" alt="Nolay project cover" class="w-full h-full object-cover opacity-70" loading="eager" fetchpriority="high" decoding="async">
+                            <div class="absolute inset-0 bg-gradient-to-r from-black via-black/45 to-black/10"></div>
+                        </div>
+                        <div class="creation-copy relative z-10 min-h-[100svh] flex items-center px-6 md:px-12 lg:px-20">
+                            <div class="max-w-xl">
+                                <p class="text-zinc-400 font-space text-xs tracking-[0.22em] uppercase">01 / Featured</p>
+                                <h2 class="mt-3 text-5xl md:text-8xl font-bold title-font text-zinc-100 uppercase tracking-tight">Nolay</h2>
+                                <p class="mt-5 text-zinc-300 font-space text-sm md:text-base leading-relaxed">
+                                    A local-first schedule planner focused on clean daily planning, smart reminders, and flexible calendar workflows without paywalls.
+                                </p>
+                                <div class="mt-6 flex flex-wrap gap-2">
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">Android App</span>
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">Flutter</span>
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">Productivity</span>
+                                </div>
+                                <button onclick="window.location.href='/creations/nolay/'" class="mt-8 bg-white text-black hover:bg-zinc-200 px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-[0.14em] transition-colors">
+                                    View Project
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="creation-section min-h-[100svh] snap-start relative overflow-hidden">
+                        <div class="creation-media absolute top-0 left-0 w-full md:w-[62%] h-full">
+                            <img src="assets/images/nolaws.webp" alt="Nolaws project cover" class="w-full h-full object-cover opacity-70" loading="lazy" decoding="async">
+                            <div class="absolute inset-0 bg-gradient-to-l from-black via-black/45 to-black/10"></div>
+                        </div>
+                        <div class="creation-copy relative z-10 min-h-[100svh] flex items-center justify-end px-6 md:px-12 lg:px-20">
+                            <div class="max-w-xl text-left md:text-right">
+                                <p class="text-zinc-400 font-space text-xs tracking-[0.22em] uppercase">02 / Interactive</p>
+                                <h2 class="mt-3 text-5xl md:text-8xl font-bold title-font text-zinc-100 uppercase tracking-tight">Nolaws</h2>
+                                <p class="mt-5 text-zinc-300 font-space text-sm md:text-base leading-relaxed">
+                                    A high-speed 3D browser racing experience built from scratch with custom mechanics, dynamic traffic AI, and responsive controls.
+                                </p>
+                                <div class="mt-6 flex flex-wrap gap-2 md:justify-end">
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">Babylon.js</span>
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">TypeScript</span>
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">3D</span>
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">Browser Game</span>
+                                </div>
+                                <button onclick="trackAnalytics('launch_game', {game: 'nolaws'}); window.location.href='/nolaws/'" class="mt-8 bg-zinc-100 text-black hover:bg-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-[0.14em] transition-colors">
+                                    Launch Game
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="creation-section min-h-[100svh] snap-start relative overflow-hidden">
+                        <div class="creation-media absolute top-0 right-0 w-full md:w-[62%] h-full">
+                            <img src="/creations/norot/assets/schedule-app-popup.webp" alt="Norot project cover" class="w-full h-full object-cover opacity-70" loading="lazy" decoding="async">
+                            <div class="absolute inset-0 bg-gradient-to-r from-black via-black/45 to-black/10"></div>
+                        </div>
+                        <div class="creation-copy relative z-10 min-h-[100svh] flex items-center px-6 md:px-12 lg:px-20">
+                            <div class="max-w-xl">
+                                <p class="text-zinc-400 font-space text-xs tracking-[0.22em] uppercase">03 / In Progress</p>
+                                <h2 class="mt-3 text-5xl md:text-8xl font-bold title-font text-zinc-100 uppercase tracking-tight">Norot</h2>
+                                <p class="mt-5 text-zinc-300 font-space text-sm md:text-base leading-relaxed">
+                                    A mindful Android launcher designed to reduce distraction loops. The project is still in active production and feature polishing.
+                                </p>
+                                <div class="mt-6 flex flex-wrap gap-2">
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">Android App</span>
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">Launcher</span>
+                                    <span class="text-[10px] px-3 py-1 rounded-full border border-zinc-700 text-zinc-300 uppercase tracking-[0.16em] font-space">In Production</span>
+                                </div>
+                                <button onclick="window.location.href='/creations/norot/'" class="mt-8 bg-white text-black hover:bg-zinc-200 px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-[0.14em] transition-colors">
+                                    View Progress
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="masked-layer"></div>
+
+    <script type="module" src="/assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMZYKARI | Identity</title>
+    <base href="/">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP & Three.js for 3D and Scroll Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts: Syne, Inter, Orbitron, Space Grotesk, Share Tech Mono, and Oswald -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;900&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;600;700&family=Share+Tech+Mono&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body data-page="identity">
+
+    <!-- 1. The SVG Mask Engine -->
+    <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+            <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur" />
+                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 60 -30" result="goo" />
+            </filter>
+            <mask id="blob-mask" maskContentUnits="userSpaceOnUse">
+                <rect x="-10000" y="-10000" width="20000" height="100000" fill="black" />
+                <g filter="url(#goo)" id="mask-group"></g>
+            </mask>
+        </defs>
+    </svg>
+
+    <!-- Global Background Image -->
+    <div id="global-bg" class="bg-image-layer"></div>
+
+    <!-- ==========================================
+         GLOBAL AUTHENTICATION NODE
+         ========================================== -->
+    <div id="global-auth-node" class="fixed top-6 right-6 md:top-8 md:right-12 z-[100] pointer-events-auto">
+        <!-- Rendered dynamically by JS -->
+    </div>
+
+    <!-- ==========================================
+         AUTHENTICATION MODAL
+         ========================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <div class="bg-zinc-950 border border-zinc-800 p-8 rounded-2xl w-[90%] max-w-md relative shadow-[0_0_50px_rgba(0,255,100,0.1)] transform translate-y-4 transition-transform duration-300" id="auth-modal-content">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 class="font-orbitron text-2xl text-white mb-6 uppercase tracking-wider">System Access</h3>
+
+            <div class="space-y-4 font-space">
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Email Identity</label>
+                    <input type="email" id="auth-email" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-green-500 focus:outline-none transition-colors font-retro" placeholder="agent@network.com">
+                </div>
+                <div>
+                    <label class="block text-zinc-400 text-xs mb-1 uppercase tracking-widest font-bold">Passcode</label>
+                    <input type="password" id="auth-password" class="w-full bg-black border border-zinc-800 rounded-lg p-3 text-white focus:border-green-500 focus:outline-none transition-colors font-retro" placeholder="••••••••">
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button onclick="handleEmailLogin()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors border border-zinc-700">Log In</button>
+                    <button onclick="handleEmailSignup()" class="flex-1 bg-transparent border border-zinc-700 hover:border-zinc-500 text-zinc-300 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors">Sign Up</button>
+                </div>
+
+                <div class="flex items-center gap-4 my-6">
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                    <span class="text-zinc-600 text-xs font-retro uppercase">External Auth</span>
+                    <div class="flex-1 border-t border-zinc-800"></div>
+                </div>
+
+                <button onclick="firebaseLogin()" class="w-full bg-white text-black hover:bg-gray-200 py-3 rounded-lg font-bold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-3 shadow-lg">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Continue with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. The Base Layer -->
+    <div id="base-layer">
+        <div id="content-source" class="w-full">
+
+            <!-- ==========================================
+                 IDENTITY VIEW (3D About Me) - 9 Page Setup (Includes Feedback)
+                 ========================================== -->
+            <div class="identity-view relative w-full min-h-[1000vh]">
+
+                <!-- Gatekeeper Overlay -->
+                <div id="about-gatekeeper" class="fixed inset-0 z-[200] flex items-center justify-center bg-[#f5f5f7] text-[#1d1d1f] transition-opacity duration-500 pointer-events-auto">
+                    <svg id="gatekeeper-blob-svg" aria-hidden="true">
+                        <defs>
+                            <filter id="gatekeeper-goo" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="35" result="blur" />
+                                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 60 -30" result="goo" />
+                            </filter>
+                            <mask id="gatekeeper-blob-mask" maskContentUnits="userSpaceOnUse">
+                                <rect x="-10000" y="-10000" width="20000" height="100000" fill="black" />
+                                <g filter="url(#gatekeeper-goo)" id="gatekeeper-blob-group"></g>
+                            </mask>
+                        </defs>
+                    </svg>
+                    <div id="gatekeeper-blob-layer"></div>
+                    <div class="max-w-xl p-8 text-center relative z-10 pointer-events-auto" id="gatekeeper-content">
+                        <!-- Dynamic content rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- 3D WebGL Canvas for this specific view -->
+                <canvas id="about-webgl-canvas" class="fixed top-0 left-0 w-full h-full z-0 outline-none opacity-0 transition-opacity duration-1000"></canvas>
+
+                <!-- Fixed UI Overlay for text -->
+                <div id="about-ui-layer" class="fixed top-0 left-0 w-full h-full z-[120] opacity-0 transition-opacity duration-1000">
+
+                    <div class="absolute top-8 left-8 md:top-12 md:left-12 pointer-events-auto z-50">
+                        <button onclick="navigateTo('home-view')" class="text-[var(--about-muted)] hover:text-[var(--about-accent)] font-mono text-sm uppercase tracking-widest transition-colors flex items-center gap-4 group bg-[#f5f5f7]/80 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 shadow-sm">
+                            <span class="group-hover:-translate-x-2 transition-transform">←</span> Return Home
+                        </button>
+                    </div>
+
+                    <!-- Progress indicator -->
+                    <div class="absolute top-24 right-8 md:top-28 md:right-12 font-oswald text-xl tracking-[0.2em] text-[#1d1d1f] bg-[#f5f5f7]/80 backdrop-blur-md px-4 py-1 rounded-full border border-gray-200 shadow-sm" id="about-progress-text">1 → 9</div>
+
+                    <!-- Scroll Section 1: Intro -->
+                    <div class="about-content-section active" id="about-sec1">
+                        <h1 class="font-oswald text-5xl md:text-6xl lg:text-[5rem] text-[#1d1d1f] uppercase tracking-[0.1em] leading-[1.1] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">HI, I'M<br>SAMWEL.</h1>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium">
+                                Just a uni student trying to break into the market. And yes, I know what you’re thinking: “Why is this guy trying to break in when he already looks loaded?”<br><br>
+                                Truth is… that photo is AI. I won’t sugarcoat it — if I put my real setup here, you probably would rush to buy me a new one.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 2: What I do -->
+                    <div class="about-content-section" id="about-sec2">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">WHAT DO I DO?</h2>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium">
+                                Well, like I said, I’m trying to make some money — so I started a startup.<br><br>
+                                You can check out what I’ve been building in the <a href="#" onclick="navigateTo('creations-showcase-view'); return false;" class="text-[var(--about-accent)] underline hover:opacity-80 transition-opacity font-bold uppercase tracking-widest">Creations section</a>.<br><br>
+                                But enough of the serious stuff. Let me show you what I actually do for fun. BTW you have been Rick rolled.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 3: Computer Stuff -->
+                    <div class="about-content-section" id="about-sec3">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">COMPUTER STUFF</h2>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p id="text-about-sec3" class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium line-clamp-4 md:line-clamp-5 transition-all duration-500">
+                                Alright, I know, I know… you’re still going to say, “But you told us you were going to show us the good stuff.”<br>You guys are a bit naggy.<br><br>
+                                Let me remind you — I said I’d show you the things I do for fun. Not you.<br>
+                                Honestly, I’m into messing with the kernel, running random commands in the terminal just so I look cool, and chasing that feeling when something I built actually works.<br><br>
+                                That part never gets old. What we don’t usually tell you, though, is that most of the time we’re just spending our nights fixing errors… only to create new ones while trying to fix the old ones. And after hours of chaos, you finally realize the problem was something ridiculously simple — right after you’ve already broken everything else.<br><br>
+                                For example, it’s 5:42 a.m. right now, and I haven’t slept yet. I’m still here working on this portfolio.<br>
+                                A portfolio that, if I’m being honest… probably no one is going to look at.
+                            </p>
+                            <button onclick="toggleReadMore(event, 'about-sec3', 2)" class="mt-4 font-oswald text-[var(--about-accent)] tracking-widest uppercase text-xs hover:text-[#1d1d1f] transition-colors border-b border-[var(--about-accent)]">See More</button>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 4: Cars -->
+                    <div class="about-content-section" id="about-sec4">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">CARS</h2>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p id="text-about-sec4" class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium line-clamp-4 md:line-clamp-5 transition-all duration-500">
+                                The next thing I’d say I’m into after tech is cars.<br><br>
+                                That one’s actually thanks to my dad. I’ll give you a moment to get jealous.<br><br>
+                                Anyway, if you scroll through my feed and you’re not a car person, you might get bored pretty quickly because I'm sure about 40% of it is car content.<br>
+                                It gets worse if you’re not into tech either — that’s another 40% right there.<br>
+                                As for the remaining 20%… I’m not sure I want to explain that part.<br><br>
+                                I know so much about cars you’d probably think I own one but I don’t. I don’t even have a driver’s license yet. But I'm sure I can drive you anywhere, in anything except planes of course. Are planes even driven? Idk what I'm saying. Must be the water... if you didn't get that you probably don't watch Formula 1.
+                            </p>
+                            <div class="flex items-center gap-6 mt-4 justify-end md:justify-end">
+                                <button onclick="toggleReadMore(event, 'about-sec4', 3)" class="font-oswald text-[var(--about-accent)] tracking-widest uppercase text-xs hover:text-[#1d1d1f] transition-colors border-b border-[var(--about-accent)]">See More</button>
+                                <button onclick="toggleListView(event, 'cars', 3)" class="bg-[#1d1d1f] text-white font-oswald text-xs tracking-widest uppercase px-5 py-2 rounded-full hover:bg-[var(--about-accent)] transition-colors shadow-lg">View List</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 5: Electronics -->
+                    <div class="about-content-section" id="about-sec5">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">ELECTRONICS</h2>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p id="text-about-sec5" class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium line-clamp-4 md:line-clamp-5 transition-all duration-500">
+                                I kind of see this as the same thing as computers. They’re both tech, right?<br>
+                                I’d like to say I don’t do as much of it now because school keeps me busy… but honestly that’s probably just a fancy way of saying I got a little lazy.<br><br>
+                                Back then though, I was obsessed. I bought my first soldering iron in 2017 when I was still a kid. Relax -- stop trying to estimate my age.<br><br>
+                                No one in my family or around me knew anything about electronics. It all started from those OG YouTube DIY videos. One video led to curiosity, curiosity led to research, and somehow I ended up reading about transistors, capacitors, and resistors at an age where my friends would just stare at me like, “What is this guy even talking about?”<br><br>
+                                I still remember the days when nobody trusted me with electronics. Mostly because I had a habit of taking things apart just to understand them… and sometimes ruining it while putting it back together. Other times it meant sacrificing some rarely-used device just so I could steal the motor for an RC project.<br><br>
+                                Those were the days.<br><br>
+                                I kept learning though, and now I’d say I’m pretty comfortable with whatever electronics you throw at me. I still build things once in a while. I’ve got a full soldering kit and some tools in my setup… just not quite the same level of chaos as before.
+                            </p>
+                            <button onclick="toggleReadMore(event, 'about-sec5', 4)" class="mt-4 font-oswald text-[var(--about-accent)] tracking-widest uppercase text-xs hover:text-[#1d1d1f] transition-colors border-b border-[var(--about-accent)]">See More</button>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 6: Advice (No Photo) -->
+                    <div class="about-content-section" id="about-sec6">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">STAY CURIOUS</h2>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p id="text-about-sec6" class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium transition-all duration-500">
+                                I know I’m not exactly successful enough to be giving advice. Actually, who am I kidding… I’m not even successful yet.<br><br>
+                                But if I had to say one thing, it would be this: do what excites you and stay curious.<br><br>
+                                Most of the things I know today started with simple curiosity. Before I got into electronics, I was into reading, writing, and a bunch of other things I won’t bore you with. But I’m pretty sure if I had stuck with those paths, I wouldn’t be as happy as I am now.<br>
+                                Not that everything is perfect — every path has its ups and downs.<br><br>
+                                Still, I’d rather deal with the worst parts of this than do anything else in the world.<br><br>
+                                Also, don’t be lazy. Unlike me. Get your life together.<br><br>
+                                …Okay, that part might have just been to make you feel better. Or maybe it wasn’t.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 7: Gaming -->
+                    <div class="about-content-section" id="about-sec7">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">GAMING</h2>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p id="text-about-sec7" class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium line-clamp-4 md:line-clamp-5 transition-all duration-500">
+                                Not everything in life has to be serious.<br><br>
+                                Some of the things you saw earlier might make it look like I’m only into the boring stuff, but that’s not the full story. I’m also into gaming.<br>
+                                It actually goes way back to the Windows XP days — playing GTA 2, Vice City, and Need for Speed: Most Wanted.<br><br>
+                                Now you’re probably expecting some high-end gaming setup with the latest titles running at crazy frame rates…<br><br>
+                                Well, bummer. I only recently got a decent PC — and I mean decent, which is very different from good. It can’t even run Expedition 33 above 30 FPS.<br><br>
+                                But hey, it’s what I’ve got for now, and honestly I’m glad I have it.<br><br>
+                                This section will probably get an update soon.
+                            </p>
+                            <div class="flex items-center gap-6 mt-4 justify-start">
+                                <button onclick="toggleReadMore(event, 'about-sec7', 6)" class="font-oswald text-[var(--about-accent)] tracking-widest uppercase text-xs hover:text-[#1d1d1f] transition-colors border-b border-[var(--about-accent)]">See More</button>
+                                <button onclick="toggleListView(event, 'gaming', 6)" class="bg-[#1d1d1f] text-white font-oswald text-xs tracking-widest uppercase px-5 py-2 rounded-full hover:bg-[var(--about-accent)] transition-colors shadow-lg">View List</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 8: Watching -->
+                    <div class="about-content-section" id="about-sec8">
+                        <h2 class="font-oswald text-4xl md:text-5xl lg:text-[4rem] text-[#1d1d1f] uppercase tracking-[0.1em] mb-6 drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)]">WATCHING</h2>
+                        <div class="pointer-events-auto drop-shadow-[0_0_15px_rgba(255,255,255,1)]">
+                            <p id="text-about-sec8" class="text-[var(--about-muted)] font-space text-xs md:text-sm leading-loose tracking-widest font-medium line-clamp-4 md:line-clamp-5 transition-all duration-500">
+                                Finally no life is fun without some film. And I mean everything: movies, series, animations, and anime.<br><br>
+                                For those about to say “anime and animation are the same thing”… please exit the website and delete your account on the way out.<br>
+                                Now that the anime haters have left, I have a confession.<br><br>
+                                First, I should say I don’t really have a single favorite. I enjoy all of them. It’s just that anime has been speaking to me a lot lately.<br>
+                                But here’s the confession: I still haven’t watched the big OG anime like One Piece, Pokémon, or Naruto. Every time I see the number of episodes, I just give up. I don’t think I have that kind of commitment in me.<br><br>
+                                And yes, I know that sounds ironic because I watched the entire Initial D series — which is actually my favorite — and that’s around 81 episodes.<br><br>
+                                But 2000+ episodes? Come on.<br><br>
+                                Some of you probably started hating me halfway through that sentence. You have permission to leave.<br><br>
+                                Maybe one day I’ll change my mind and watch them. Who knows.<br>
+                                Actually… please don’t leave. And if you run into any anime haters who already left, tell them to come back. I’ve apologized.
+                            </p>
+                            <div class="flex flex-wrap items-center gap-4 mt-4 justify-end md:justify-end">
+                                <button onclick="toggleReadMore(event, 'about-sec8', 7)" class="font-oswald text-[var(--about-accent)] tracking-widest uppercase text-xs hover:text-[#1d1d1f] transition-colors border-b border-[var(--about-accent)]">See More</button>
+                                <button onclick="toggleListView(event, 'watching', 7)" class="bg-[#1d1d1f] text-white font-oswald text-xs tracking-widest uppercase px-4 py-2 rounded-full hover:bg-[var(--about-accent)] transition-colors shadow-lg">View List</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Section 9: Feedback Terminal -->
+                    <div class="about-content-section flex flex-col justify-end pb-8 px-6 md:px-20" id="about-sec9" style="height: 50vh; bottom: 0;">
+                        <div class="w-full max-w-7xl mx-auto bg-[#f5f5f7]/90 border border-gray-200 rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl pointer-events-auto">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+                                <div>
+                                    <h4 class="text-2xl md:text-3xl font-bold uppercase text-[#1d1d1f] font-oswald drop-shadow-sm tracking-[0.1em]">Leave a Comment</h4>
+                                    <span class="font-space text-[var(--about-muted)] text-xs tracking-widest uppercase block mt-1 font-medium">What do you think of this?</span>
+                                </div>
+                                <div id="about-auth-ui-container" class="font-retro"></div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div class="lg:col-span-1" id="about-feedback-form-wrapper"></div>
+                                <div class="lg:col-span-2 space-y-3 overflow-y-auto max-h-[300px] scrollbar-hide pr-2" id="about-logs-container"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ==========================================
+                     ABOUT ME - HORIZONTAL LIST OVERLAYS
+                     ========================================== -->
+                <div id="about-list-overlays">
+
+                    <!-- Cars List -->
+                    <div id="about-list-cars" class="about-list-panel">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-oswald text-2xl text-[#1d1d1f] tracking-widest uppercase">Garage</h3>
+                            <button onclick="toggleListView(event, 'cars', 3)" class="bg-white/80 backdrop-blur-md px-4 py-1 rounded-full border border-gray-300 font-oswald text-[var(--about-accent)] uppercase text-xs tracking-widest hover:text-black shadow-sm">Close</button>
+                        </div>
+                        <div class="about-list-panel-content" id="cars-items">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Gaming List -->
+                    <div id="about-list-gaming" class="about-list-panel">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-oswald text-2xl text-[#1d1d1f] tracking-widest uppercase">Library</h3>
+                            <button onclick="toggleListView(event, 'gaming', 6)" class="bg-white/80 backdrop-blur-md px-4 py-1 rounded-full border border-gray-300 font-oswald text-[var(--about-accent)] uppercase text-xs tracking-widest hover:text-black shadow-sm">Close</button>
+                        </div>
+                        <div class="about-list-panel-content" id="gaming-items">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Watching List -->
+                    <div id="about-list-watching" class="about-list-panel">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-oswald text-2xl text-[#1d1d1f] tracking-widest uppercase">Watchlist</h3>
+                            <button onclick="toggleListView(event, 'watching', 7)" class="bg-white/80 backdrop-blur-md px-4 py-1 rounded-full border border-gray-300 font-oswald text-[var(--about-accent)] uppercase text-xs tracking-widest hover:text-black shadow-sm">Close</button>
+                        </div>
+                        <div class="about-list-tabs">
+                            <button onclick="setWatchingTab('anime')" class="about-list-tab active" data-tab="anime">Anime</button>
+                            <button onclick="setWatchingTab('series')" class="about-list-tab" data-tab="series">Series</button>
+                            <button onclick="setWatchingTab('movies')" class="about-list-tab" data-tab="movies">Movies</button>
+                        </div>
+                        <div class="about-list-panel-content">
+                            <div id="watching-anime" data-watch-section="anime">
+                                <div id="anime-items"></div>
+                            </div>
+                            <div id="watching-series" data-watch-section="series" style="display: none;">
+                                <div id="series-items"></div>
+                            </div>
+                            <div id="watching-movies" data-watch-section="movies" style="display: none;">
+                                <div id="movies-items"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="masked-layer"></div>
+
+    <script type="module" src="/assets/site.js"></script>
+</body>
+</html>

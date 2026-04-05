@@ -1,0 +1,288 @@
+/* ─── Garage Overlay ─── */
+#garage {
+  background: transparent;
+  backdrop-filter: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.garage-layout {
+  width: 46%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  padding: 16px 18px 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(4px);
+  margin-left: 3vw;
+  margin-right: auto;
+}
+
+/* ─── Header ─── */
+.garage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.garage-header h2 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: clamp(14px, 2vw, 22px);
+  letter-spacing: 2px;
+  color: #1A1A2E;
+}
+
+.garage-coins {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #FF007F;
+}
+
+/* ─── Category Tabs ─── */
+.garage-categories {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.cat-tab {
+  padding: 8px 18px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(0, 229, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 8px;
+}
+
+.cat-tab:hover {
+  border-color: #00E5FF;
+  color: #1A1A2E;
+  background: rgba(0, 229, 255, 0.1);
+}
+
+.cat-tab.active {
+  background: #00E5FF;
+  border-color: #00E5FF;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3);
+}
+
+/* ─── Main Content Grid ─── */
+.garage-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ─── Vehicle Carousel ─── */
+.vehicle-carousel {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 18px;
+  background: rgba(245, 247, 255, 0.92);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-arrow {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  font-weight: 700;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  color: #00B4D8;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.carousel-arrow:hover {
+  background: #00E5FF;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 229, 255, 0.3);
+}
+
+.vehicle-info {
+  text-align: center;
+  min-width: 200px;
+}
+
+.vehicle-info h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(12px, 1.5vw, 18px);
+  color: #1A1A2E;
+  margin-bottom: 4px;
+}
+
+.vehicle-info p {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: rgba(26, 26, 46, 0.55);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ─── Upgrade Panel ─── */
+.upgrade-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: 120px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-row label {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #1A1A2E;
+}
+
+.stat-row label small {
+  display: block;
+  font-size: 13px;
+  color: rgba(26, 26, 46, 0.45);
+}
+
+.stat-bar {
+  height: 8px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00E5FF, #FF007F);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.btn-upgrade {
+  padding: 6px 14px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: #00B4D8;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-upgrade:hover:not(:disabled) {
+  background: #00E5FF;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 229, 255, 0.3);
+}
+
+.btn-upgrade:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.upgrade-cost {
+  font-size: 9px;
+  opacity: 0.6;
+}
+
+/* ─── Visual Customization Panel ─── */
+.visual-panel {
+  padding: 16px;
+  background: rgba(245, 247, 255, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.visual-panel h4 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  color: rgba(26, 26, 46, 0.5);
+  text-transform: uppercase;
+}
+
+.color-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.color-row label {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 100px;
+  color: #1A1A2E;
+}
+
+@media (max-width: 980px) {
+  .garage-layout {
+    width: 84%;
+    margin: 0 auto;
+  }
+}
+
+.color-row input[type="color"] {
+  width: 36px;
+  height: 28px;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ─── Select Button ─── */
+#btn-select-vehicle {
+  display: block;
+  margin: 0 auto;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .garage-main {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-row {
+    grid-template-columns: 90px 1fr auto;
+  }
+}

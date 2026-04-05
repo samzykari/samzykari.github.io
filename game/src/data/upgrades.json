@@ -1,0 +1,38 @@
+{
+  "engine": {
+    "label": "Engine",
+    "description": "Increases top speed and acceleration",
+    "maxLevel": 5,
+    "baseCost": 500,
+    "costExponent": 1.8,
+    "statBoostPercent": 0.05,
+    "affects": ["topSpeed", "acceleration"]
+  },
+  "tires": {
+    "label": "Tires",
+    "description": "Improves handling and grip",
+    "maxLevel": 5,
+    "baseCost": 500,
+    "costExponent": 1.8,
+    "statBoostPercent": 0.08,
+    "affects": ["handling", "grip"]
+  },
+  "chassis": {
+    "label": "Chassis",
+    "description": "Increases durability. Grants +1 health at levels 3 and 5.",
+    "maxLevel": 5,
+    "baseCost": 500,
+    "costExponent": 1.8,
+    "healthBoostLevels": [3, 5],
+    "affects": ["health"]
+  },
+  "nitro": {
+    "label": "Nitro",
+    "description": "Increases nitro tank capacity",
+    "maxLevel": 5,
+    "baseCost": 500,
+    "costExponent": 1.8,
+    "statBoostPercent": 0.15,
+    "affects": ["nitroCapacity"]
+  }
+}

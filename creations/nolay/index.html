@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMZYKARI | Nolay</title>
+    <base href="/">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700;800&family=Unbounded:wght@500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --nolay-orange: #ff680a;
+            --nolay-orange-soft: #ff9b57;
+            --nolay-ink: #181a22;
+            --nolay-paper: #f6f3f1;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: radial-gradient(1200px 600px at 20% -10%, #ffd2b3 0%, transparent 40%),
+                        radial-gradient(900px 500px at 110% 10%, #ffe2cc 0%, transparent 48%),
+                        var(--nolay-paper);
+            color: var(--nolay-ink);
+        }
+
+        .title-font {
+            font-family: 'Unbounded', sans-serif;
+            letter-spacing: -0.01em;
+            font-weight: 700;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.68);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(24, 26, 34, 0.08);
+            box-shadow: 0 20px 50px rgba(24, 26, 34, 0.08);
+        }
+
+        .accent-btn {
+            background: linear-gradient(120deg, var(--nolay-orange) 0%, #ff7f26 100%);
+            color: #ffffff;
+            box-shadow: 0 12px 30px rgba(255, 104, 10, 0.35);
+        }
+
+        .accent-btn:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+        }
+
+        .ghost-btn {
+            background: rgba(255, 255, 255, 0.78);
+            color: var(--nolay-ink);
+            border: 1px solid rgba(24, 26, 34, 0.18);
+        }
+
+        .gallery-shot {
+            border-radius: 24px;
+            border: 1px solid rgba(24, 26, 34, 0.08);
+            box-shadow: 0 20px 50px rgba(24, 26, 34, 0.1);
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .field {
+            width: 100%;
+            border: 1px solid rgba(24, 26, 34, 0.16);
+            border-radius: 12px;
+            padding: 0.7rem 0.85rem;
+            background: rgba(255, 255, 255, 0.92);
+            color: #1b1b1f;
+        }
+
+        .field:focus {
+            outline: none;
+            border-color: #ff680a;
+            box-shadow: 0 0 0 3px rgba(255, 104, 10, 0.16);
+        }
+
+        .review-item {
+            border: 1px solid rgba(24, 26, 34, 0.1);
+            border-radius: 14px;
+            padding: 0.9rem;
+            background: rgba(255, 255, 255, 0.86);
+        }
+
+        .rating-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid rgba(24, 26, 34, 0.16);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .rating-star {
+            border: none;
+            background: transparent;
+            font-size: 1.25rem;
+            line-height: 1;
+            color: #c9cbd3;
+            cursor: pointer;
+            transition: transform 0.15s ease, color 0.15s ease;
+            padding: 0.1rem;
+        }
+
+        .rating-star:hover {
+            transform: translateY(-1px);
+        }
+
+        .rating-star.active {
+            color: #ff680a;
+        }
+
+        .rating-clear {
+            margin-left: auto;
+            border: 1px solid rgba(24, 26, 34, 0.14);
+            border-radius: 999px;
+            background: #fff;
+            color: #5b5e68;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 0.22rem 0.55rem;
+            cursor: pointer;
+        }
+
+        .apk-list {
+            margin-top: 1rem;
+            padding-left: 1.1rem;
+            color: #3f434f;
+        }
+
+        .apk-list li {
+            margin-top: 0.5rem;
+            line-height: 1.45;
+        }
+
+        .apk-list a {
+            color: #c44e04;
+            text-decoration: underline;
+            font-weight: 700;
+        }
+
+        .copy-card {
+            padding: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .copy-card {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-7xl mx-auto px-5 md:px-8 py-6 md:py-10">
+        <div class="flex items-center justify-between mb-8">
+            <a href="/creations/" class="text-sm uppercase tracking-[0.18em] text-zinc-600 hover:text-zinc-900 transition-colors">← Back to Creations</a>
+            <span class="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Project Page</span>
+        </div>
+
+        <section class="glass-card rounded-3xl p-5 md:p-8 lg:p-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7">
+                    <img src="/creations/nolay/assets/logo.png" alt="Nolay Logo" class="w-full max-w-lg rounded-2xl border border-black/10" loading="eager" fetchpriority="high" decoding="async">
+                    <p class="mt-6 text-xs uppercase tracking-[0.2em] text-zinc-500">Meet Nolay</p>
+                    <h1 class="title-font mt-2 text-4xl md:text-6xl font-extrabold leading-[1.04] text-zinc-900">Your schedule,<br>your data,<br>your rules.</h1>
+                    <p class="mt-5 text-base md:text-[1.1rem] text-zinc-700 leading-relaxed">
+                        A 100% free, local-first schedule planner built to track tasks, events, and routines without the clutter. No ads, no monthly subscriptions, and no servers hoarding your data.
+                    </p>
+                    <div class="mt-7 flex flex-wrap gap-3">
+                        <a href="https://github.com/samzykari/nolay/releases/tag/norot" target="_blank" rel="noopener noreferrer" class="accent-btn px-6 py-3 rounded-xl font-semibold transition-all inline-flex">Download the APK</a>
+                        <a href="https://github.com/samzykari/nolay" target="_blank" rel="noopener noreferrer" class="ghost-btn px-6 py-3 rounded-xl font-semibold transition-all inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                            View Source on GitHub
+                        </a>
+                    </div>
+
+                    <ul class="apk-list">
+                        <li>
+                            Nolay-Universal.apk (works safely everywhere, larger file):
+                            <a href="https://github.com/samzykari/nolay/releases/download/norot/Nolay-Universal.apk" target="_blank" rel="noopener noreferrer">download</a>
+                        </li>
+                        <li>
+                            Nolay-arm64-v8a.apk (most modern phones, recommended):
+                            <a href="https://github.com/samzykari/nolay/releases/download/norot/Nolay-arm64-v8a.apk" target="_blank" rel="noopener noreferrer">download</a>
+                        </li>
+                        <li>
+                            Nolay-arm-v7a.apk (older phones):
+                            <a href="https://github.com/samzykari/nolay/releases/download/norot/Nolay-arm-v7a.apk" target="_blank" rel="noopener noreferrer">download</a>
+                        </li>
+                        <li>
+                            Nolay-x86_64.apk (PC Android emulators):
+                            <a href="https://github.com/samzykari/nolay/releases/download/norot/Nolay-x86_64.apk" target="_blank" rel="noopener noreferrer">download</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="gallery-shot lg:col-span-5">
+                    <img src="/creations/nolay/assets/main.jpg" alt="Nolay Main Daily View" class="w-full h-full object-cover max-h-[820px]" loading="eager" fetchpriority="high" decoding="async">
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-14 glass-card rounded-2xl copy-card">
+            <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Nolay: The Complete Scheduling Experience</p>
+            <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">A complete system for planning, routines, and control</h2>
+            <div class="mt-4 space-y-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                <p>
+                    Nolay is a powerful, locally-hosted scheduling and productivity application designed to give you absolute control over your time, your routines, and your data. Built from the ground up to be fast, free, and deeply integrated into your daily workflow, Nolay removes the common barriers in modern productivity software: no forced subscriptions, no required accounts, and no waiting on remote server latency.
+                </p>
+                <p>
+                    Below is an in-depth walkthrough of how Nolay works feature by feature, how those features connect, and how they combine into a frictionless planning experience.
+                </p>
+            </div>
+        </section>
+
+        <section class="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-start">
+            <div class="md:col-span-4">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 1</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Frictionless Onboarding and Guest Mode</h2>
+            </div>
+            <div class="md:col-span-8 glass-card rounded-2xl copy-card space-y-5 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                <p>
+                    The moment Nolay is installed, you can start planning. There are no mandatory sign-ups, no cloud account walls, and no paywalls blocking basic usage.
+                </p>
+                <p>
+                    Through Guest Mode, Nolay stores profile and schedule data locally so you can set a nickname, organize weeks of tasks, and customize your workspace completely anonymously.
+                </p>
+                <p>
+                    If you choose to connect an account later, you can. It is optional by design, so access starts instantly and remains in your control.
+                </p>
+            </div>
+        </section>
+
+        <section class="mt-14">
+            <div class="mb-6">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 2</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Comprehensive Time Visualization</h2>
+                <p class="mt-3 text-zinc-700 max-w-4xl leading-relaxed text-base md:text-[1.05rem]">
+                    Nolay adapts to how you process time by offering daily, weekly, and monthly scopes, so you can switch smoothly from micro execution to macro planning.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="gallery-shot">
+                    <img src="/creations/nolay/assets/main.jpg" alt="Nolay Daily View" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    <div class="px-4 py-3 text-sm text-zinc-700">
+                        <strong>The Daily View:</strong> Focused 24-hour action blocks that keep you grounded in what is next.
+                    </div>
+                </div>
+                <div class="gallery-shot">
+                    <img src="/creations/nolay/assets/weekly.jpg" alt="Nolay Weekly View" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    <div class="px-4 py-3 text-sm text-zinc-700">
+                        <strong>The Weekly View:</strong> Balance workload, distribute deep work, and reduce burnout across the week.
+                    </div>
+                </div>
+                <div class="gallery-shot">
+                    <img src="/creations/nolay/assets/monthly.jpg" alt="Nolay Monthly View" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                    <div class="px-4 py-3 text-sm text-zinc-700">
+                        <strong>The Monthly View:</strong> A bird's-eye timeline for deadlines, milestones, and long-term events.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            <div class="md:col-span-5 gallery-shot order-2 md:order-1">
+                <img src="/creations/nolay/assets/routine.jpg" alt="Nolay Dynamic Routine Builder" class="w-full h-full object-cover" loading="lazy" decoding="async">
+            </div>
+            <div class="md:col-span-7 glass-card rounded-2xl copy-card order-1 md:order-2">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 3</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Dynamic Routine Builder</h2>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Willpower is finite, so Nolay automates repeatable structure. Morning routines, weekly classes, workout cycles, and recurring operational tasks can be configured once and reused indefinitely.
+                </p>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Instead of manually re-entering repetitive items every week, Nolay turns repeatable goals into stable, time-bound frameworks.
+                </p>
+            </div>
+        </section>
+
+        <section class="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            <div class="md:col-span-7 glass-card rounded-2xl copy-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 4</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Intelligent Task Catch-Up (Missed Items)</h2>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Life happens, and occasionally tasks slip. Nolay's Missed Items system captures unfinished items into a dedicated queue so overdue work never disappears into old calendar pages.
+                </p>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    From that queue, tasks can be rescheduled quickly for today, moved to future slots, or safely dismissed with context.
+                </p>
+            </div>
+            <div class="md:col-span-5 gallery-shot">
+                <img src="/creations/nolay/assets/missed_items.jpg" alt="Nolay Missed Items" class="w-full h-full object-cover" loading="lazy" decoding="async">
+            </div>
+        </section>
+
+        <section class="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            <div class="md:col-span-5 gallery-shot order-2 md:order-1">
+                <img src="/creations/nolay/assets/notifications.jpg" alt="Nolay Notifications" class="w-full h-full object-cover" loading="lazy" decoding="async">
+            </div>
+            <div class="md:col-span-7 glass-card rounded-2xl copy-card order-1 md:order-2">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 5</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Unintrusive, Reliable Notifications</h2>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Schedules only work when reminders show up on time. Nolay delivers timely, on-device notifications for tasks and routines without overwhelming noise.
+                </p>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Whether your phone is actively in use or idle, Nolay keeps your next actions visible and predictable.
+                </p>
+            </div>
+        </section>
+
+        <section class="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            <div class="md:col-span-7 glass-card rounded-2xl copy-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 6</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Bring Your Own AI (BYO-AI) Import System</h2>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Nolay does not lock AI planning behind a premium app tier. Use your preferred AI stack (ChatGPT, Claude, Gemini, or local models), generate structured schedule text, and paste it into Nolay.
+                </p>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    The import parser converts plain output into rich tasks and calendar events so advanced planning is available without vendor lock-in.
+                </p>
+            </div>
+            <div class="md:col-span-5 gallery-shot">
+                <img src="/creations/nolay/assets/AI_import.jpg" alt="Nolay AI Import" class="w-full h-full object-cover" loading="lazy" decoding="async">
+            </div>
+        </section>
+
+        <section class="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            <div class="md:col-span-5 gallery-shot order-2 md:order-1">
+                <img src="/creations/nolay/assets/widgets.jpg" alt="Nolay Home Screen Widgets" class="w-full h-full object-cover" loading="lazy" decoding="async">
+            </div>
+            <div class="md:col-span-7 glass-card rounded-2xl copy-card order-1 md:order-2">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 7</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">At-A-Glance Home Screen Widgets</h2>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Productivity should not require opening the app every time. Nolay's widgets surface upcoming tasks and progress directly on your home screen for zero-friction awareness.
+                </p>
+            </div>
+        </section>
+
+        <section class="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            <div class="md:col-span-8 glass-card rounded-2xl copy-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 8</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Local-First Architecture and Lightning Performance</h2>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Under the hood, Nolay writes actions directly to local device storage. Tasks, routines, and state changes happen instantly without waiting for cloud round-trips.
+                </p>
+                <ul class="mt-4 list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    <li><strong>Zero latency:</strong> UI response tracks your actions in real time.</li>
+                    <li><strong>True offline support:</strong> Plan, edit, and reorganize anywhere, even without network coverage.</li>
+                </ul>
+            </div>
+            <div class="md:col-span-4 gallery-shot">
+                <img src="/creations/nolay/assets/main.jpg" alt="Nolay Local First Performance" class="w-full h-full object-cover" loading="lazy" decoding="async">
+            </div>
+        </section>
+
+        <section class="mt-14 mb-14 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+            <div class="md:col-span-8 glass-card rounded-2xl copy-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Section 9</p>
+                <h2 class="title-font mt-2 text-3xl md:text-4xl font-extrabold text-zinc-900">Your Data, Your Drive and 100% Free by Design</h2>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Nolay integrates with Google Drive backups so your data can be exported and preserved in storage you already own. You keep control of backups, privacy, and recovery without proprietary lock-in.
+                </p>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    Nolay is intentionally free: no ads, no pro-tier lockouts, and no recurring billing traps. By relying on local-first performance, optional user-owned cloud backup, and BYO-AI, Nolay removes the cost pressures that usually become subscriptions.
+                </p>
+                <p class="mt-4 text-zinc-700 leading-relaxed text-base md:text-[1.05rem]">
+                    The result is a lightweight, fast, deeply customizable scheduling app that exists to reduce friction and give you peace of mind.
+                </p>
+            </div>
+            <div class="md:col-span-4 gallery-shot">
+                <img src="/creations/nolay/assets/settings.jpg" alt="Nolay Settings and Backup" class="w-full h-full object-cover" loading="lazy" decoding="async">
+            </div>
+        </section>
+
+        <section class="mb-12 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
+            <div class="lg:col-span-7 glass-card rounded-2xl copy-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Community</p>
+                <h2 class="title-font mt-2 text-2xl md:text-3xl font-extrabold text-zinc-900">Comments and Reviews</h2>
+                <p class="mt-3 text-zinc-700">Share what works, what feels clunky, and what should be improved next.</p>
+
+                <form id="nolay-review-form" class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <input id="nolay-review-name" class="field" type="text" placeholder="Your name" maxlength="60">
+                    <select id="nolay-review-kind" class="field">
+                        <option value="Comment">Comment</option>
+                        <option value="Review">Review</option>
+                    </select>
+                    <div class="rating-wrap" aria-label="Rating selection">
+                        <input id="nolay-review-rating" type="hidden" value="">
+                        <span class="text-xs uppercase tracking-[0.12em] text-zinc-500">Rating</span>
+                        <button type="button" class="rating-star" data-rating="1" aria-label="1 star">★</button>
+                        <button type="button" class="rating-star" data-rating="2" aria-label="2 stars">★</button>
+                        <button type="button" class="rating-star" data-rating="3" aria-label="3 stars">★</button>
+                        <button type="button" class="rating-star" data-rating="4" aria-label="4 stars">★</button>
+                        <button type="button" class="rating-star" data-rating="5" aria-label="5 stars">★</button>
+                        <button id="nolay-rating-clear" type="button" class="rating-clear" aria-label="Clear rating">Clear</button>
+                    </div>
+                    <input id="nolay-review-title" class="field" type="text" placeholder="Short title" maxlength="80">
+                    <textarea id="nolay-review-message" class="field md:col-span-2" rows="4" placeholder="Write your feedback..." maxlength="800"></textarea>
+                    <div class="md:col-span-2 flex flex-wrap items-center gap-3">
+                        <button id="nolay-review-submit" type="submit" class="accent-btn px-5 py-2.5 rounded-xl font-semibold transition-all">Post Feedback</button>
+                        <span class="text-xs text-zinc-500">Posted to the shared Nolay feedback feed.</span>
+                    </div>
+                </form>
+
+                <div id="nolay-review-list" class="mt-6 space-y-3"></div>
+            </div>
+
+            <div class="lg:col-span-5 glass-card rounded-2xl copy-card">
+                <p class="text-xs uppercase tracking-[0.2em] text-zinc-500">Support</p>
+                <h2 class="title-font mt-2 text-2xl md:text-3xl font-extrabold text-zinc-900">Report Issues</h2>
+                <p class="mt-3 text-zinc-700">Found a bug or something odd? Send a clear report and I can fix it faster.</p>
+
+                <div class="mt-5 space-y-3 text-zinc-700">
+                    <p><strong>Include:</strong> device, Android version, what happened, expected behavior, and steps to reproduce.</p>
+                    <p><strong>Attach:</strong> screenshot or screen recording if possible.</p>
+                </div>
+
+                <form id="nolay-issue-form" class="mt-5 space-y-3">
+                    <input id="nolay-issue-title" class="field" type="text" placeholder="Issue title" maxlength="100">
+                    <textarea id="nolay-issue-message" class="field" rows="4" placeholder="Describe the issue and reproduction steps..." maxlength="1200"></textarea>
+                    <button id="nolay-issue-submit" type="submit" class="accent-btn px-5 py-2.5 rounded-xl font-semibold transition-all">Submit Issue</button>
+                </form>
+
+                <div id="nolay-issue-list" class="mt-4 space-y-3"></div>
+
+                <div class="mt-6 flex flex-wrap gap-3">
+                    <a class="accent-btn px-5 py-2.5 rounded-xl font-semibold transition-all inline-flex" href="mailto:samzykari@gmail.com?subject=Nolay%20Issue%20Report&body=Device%3A%0AAndroid%20Version%3A%0AApp%20Version%3A%0A%0AIssue%20Summary%3A%0ASteps%20to%20Reproduce%3A%0A1.%0A2.%0A3.%0A%0AExpected%20Result%3A%0AActual%20Result%3A%0A">Report via Email</a>
+                    <a class="ghost-btn px-5 py-2.5 rounded-xl font-semibold transition-all inline-flex items-center gap-2" href="https://github.com/samzykari/nolay/issues/new" target="_blank" rel="noopener noreferrer">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                        GitHub Issues
+                    </a>
+                </div>
+
+                <div class="mt-6 p-4 rounded-xl border border-black/10 bg-white/70 text-sm text-zinc-700 leading-relaxed">
+                    Tip: if the issue is related to reminders/notifications, include exact trigger time and whether battery optimization is enabled.
+                </div>
+            </div>
+        </section>
+
+        <footer class="mb-8 pb-3 border-t border-black/10 pt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-zinc-600">
+            <span>© 2026 Nolay</span>
+            <div class="flex items-center gap-4">
+                <a href="/creations/nolay/privacy-policy/" class="hover:text-zinc-900 underline">Privacy Policy</a>
+                <a href="/creations/nolay/terms-and-conditions/" class="hover:text-zinc-900 underline">Terms and Conditions</a>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWaDFwl37xaER6sACMA5F6p1SiRCghzoQ",
+            authDomain: "samzykari-22819.firebaseapp.com",
+            projectId: "samzykari-22819",
+            storageBucket: "samzykari-22819.firebasestorage.app",
+            messagingSenderId: "936152324226",
+            appId: "1:936152324226:web:d1eba01a43aed3a050fc9b",
+            measurementId: "G-SQGNY4Z0MJ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const reviewsPath = collection(db, "reviews");
+
+        const reviewForm = document.getElementById('nolay-review-form');
+        const reviewList = document.getElementById('nolay-review-list');
+        const reviewSubmit = document.getElementById('nolay-review-submit');
+        const ratingInput = document.getElementById('nolay-review-rating');
+        const ratingStars = Array.from(document.querySelectorAll('.rating-star'));
+        const ratingClear = document.getElementById('nolay-rating-clear');
+        const issueForm = document.getElementById('nolay-issue-form');
+        const issueList = document.getElementById('nolay-issue-list');
+        const issueSubmit = document.getElementById('nolay-issue-submit');
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        async function ensureAuth() {
+            if (!auth.currentUser) {
+                await signInAnonymously(auth);
+            }
+        }
+
+        function renderFeed(allLogs) {
+            const nolayLogs = allLogs.filter((item) => item.source === 'nolay');
+            const feedback = nolayLogs.filter((item) => item.type !== 'Issue');
+            const issues = nolayLogs.filter((item) => item.type === 'Issue');
+
+            if (reviewList) {
+                if (!feedback.length) {
+                    reviewList.innerHTML = '<p class="text-sm text-zinc-500">No feedback posted yet. Be the first one.</p>';
+                } else {
+                    reviewList.innerHTML = feedback.slice(0, 25).map((item) => {
+                        const rating = item.rating ? `<span class="text-xs text-zinc-500">${escapeHtml(item.rating)}/5</span>` : '';
+                        return `
+                            <article class="review-item">
+                                <div class="flex items-center justify-between gap-3">
+                                    <p class="font-semibold text-zinc-900">${escapeHtml(item.title || 'Feedback')}</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs uppercase tracking-[0.12em] text-zinc-500">${escapeHtml(item.type || 'Comment')}</span>
+                                        ${rating}
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-sm text-zinc-700 leading-relaxed">${escapeHtml(item.text || '')}</p>
+                                <p class="mt-2 text-xs text-zinc-500">by ${escapeHtml(item.user || 'Anonymous')}</p>
+                            </article>
+                        `;
+                    }).join('');
+                }
+            }
+
+            if (issueList) {
+                if (!issues.length) {
+                    issueList.innerHTML = '<p class="text-sm text-zinc-500">No issues reported yet.</p>';
+                } else {
+                    issueList.innerHTML = issues.slice(0, 10).map((item) => `
+                        <article class="review-item">
+                            <p class="font-semibold text-zinc-900">${escapeHtml(item.title || 'Issue')}</p>
+                            <p class="mt-2 text-sm text-zinc-700 leading-relaxed">${escapeHtml(item.text || '')}</p>
+                            <p class="mt-2 text-xs text-zinc-500">reported by ${escapeHtml(item.user || 'Anonymous')}</p>
+                        </article>
+                    `).join('');
+                }
+            }
+        }
+
+        function paintRating(value) {
+            ratingStars.forEach((star) => {
+                const starValue = Number(star.dataset.rating || 0);
+                star.classList.toggle('active', value >= starValue);
+            });
+        }
+
+        if (ratingInput && ratingStars.length) {
+            ratingStars.forEach((star) => {
+                star.addEventListener('click', () => {
+                    const value = Number(star.dataset.rating || 0);
+                    ratingInput.value = String(value);
+                    paintRating(value);
+                });
+            });
+            if (ratingClear) {
+                ratingClear.addEventListener('click', () => {
+                    ratingInput.value = '';
+                    paintRating(0);
+                });
+            }
+            paintRating(0);
+        }
+
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const name = document.getElementById('nolay-review-name').value.trim() || 'Anonymous';
+                const kind = document.getElementById('nolay-review-kind').value;
+                const rating = document.getElementById('nolay-review-rating').value;
+                const title = document.getElementById('nolay-review-title').value.trim();
+                const message = document.getElementById('nolay-review-message').value.trim();
+
+                if (!message) {
+                    alert('Please write your feedback before posting.');
+                    return;
+                }
+
+                reviewSubmit.disabled = true;
+                reviewSubmit.textContent = 'Posting...';
+
+                try {
+                    await ensureAuth();
+                    await addDoc(reviewsPath, {
+                        user: name,
+                        uid: auth.currentUser ? auth.currentUser.uid : null,
+                        type: kind,
+                        source: 'nolay',
+                        title,
+                        rating,
+                        text: message,
+                        timestamp: serverTimestamp()
+                    });
+                    reviewForm.reset();
+                    if (ratingInput) {
+                        ratingInput.value = '';
+                        paintRating(0);
+                    }
+                } catch (error) {
+                    console.error('Failed to post Nolay feedback:', error);
+                    alert('Failed to post feedback. Please try again.');
+                } finally {
+                    reviewSubmit.disabled = false;
+                    reviewSubmit.textContent = 'Post Feedback';
+                }
+            });
+        }
+
+        if (issueForm) {
+            issueForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const title = document.getElementById('nolay-issue-title').value.trim();
+                const message = document.getElementById('nolay-issue-message').value.trim();
+
+                if (!title || !message) {
+                    alert('Please provide an issue title and details.');
+                    return;
+                }
+
+                issueSubmit.disabled = true;
+                issueSubmit.textContent = 'Submitting...';
+
+                try {
+                    await ensureAuth();
+                    await addDoc(reviewsPath, {
+                        user: auth.currentUser ? `anon-${auth.currentUser.uid.slice(0, 6)}` : 'Anonymous',
+                        uid: auth.currentUser ? auth.currentUser.uid : null,
+                        type: 'Issue',
+                        source: 'nolay',
+                        title,
+                        text: message,
+                        timestamp: serverTimestamp()
+                    });
+                    issueForm.reset();
+                } catch (error) {
+                    console.error('Failed to submit Nolay issue:', error);
+                    alert('Failed to submit issue. Please try again.');
+                } finally {
+                    issueSubmit.disabled = false;
+                    issueSubmit.textContent = 'Submit Issue';
+                }
+            });
+        }
+
+        onSnapshot(query(reviewsPath, orderBy('timestamp', 'desc')), (snapshot) => {
+            const allLogs = [];
+            snapshot.forEach((doc) => allLogs.push({ id: doc.id, ...doc.data() }));
+            renderFeed(allLogs);
+        }, (error) => {
+            console.error('Failed to load Nolay feed:', error);
+            if (reviewList) reviewList.innerHTML = '<p class="text-sm text-red-600">Unable to load feedback right now.</p>';
+            if (issueList) issueList.innerHTML = '<p class="text-sm text-red-600">Unable to load issues right now.</p>';
+        });
+    </script>
+</body>
+</html>

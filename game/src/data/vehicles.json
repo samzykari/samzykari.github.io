@@ -1,0 +1,225 @@
+[
+  {
+    "id": "civic_hatch",
+    "name": "Civic Hatch",
+    "category": "dailyTuner",
+    "unlockCost": 0,
+    "meshScale": { "x": 1.8, "y": 1.0, "z": 4.0 },
+    "baseStats": {
+      "topSpeed": 75, "acceleration": 22, "handling": 1.2, "grip": 1.3,
+      "health": 0, "nitroCapacity": 3, "nearMissZoneScale": 1.3, "driftMultiplier": 1.0
+    }
+  },
+  {
+    "id": "golf_gti",
+    "name": "Golf GTI",
+    "category": "dailyTuner",
+    "unlockCost": 0,
+    "meshScale": { "x": 1.8, "y": 1.0, "z": 4.1 },
+    "baseStats": {
+      "topSpeed": 78, "acceleration": 24, "handling": 1.1, "grip": 1.4,
+      "health": 0, "nitroCapacity": 3, "nearMissZoneScale": 1.2, "driftMultiplier": 1.0
+    }
+  },
+  {
+    "id": "corolla_gr",
+    "name": "Corolla GR",
+    "category": "dailyTuner",
+    "unlockCost": 500,
+    "meshScale": { "x": 1.8, "y": 1.0, "z": 4.2 },
+    "baseStats": {
+      "topSpeed": 80, "acceleration": 25, "handling": 1.3, "grip": 1.2,
+      "health": 0, "nitroCapacity": 3.2, "nearMissZoneScale": 1.3, "driftMultiplier": 1.1
+    }
+  },
+  {
+    "id": "mazda3_turbo",
+    "name": "Mazda3 Turbo",
+    "category": "dailyTuner",
+    "unlockCost": 800,
+    "meshScale": { "x": 1.8, "y": 1.0, "z": 4.1 },
+    "baseStats": {
+      "topSpeed": 82, "acceleration": 23, "handling": 1.4, "grip": 1.3,
+      "health": 0, "nitroCapacity": 3, "nearMissZoneScale": 1.2, "driftMultiplier": 1.1
+    }
+  },
+  {
+    "id": "veloster_n",
+    "name": "Veloster N",
+    "category": "dailyTuner",
+    "unlockCost": 1000,
+    "meshScale": { "x": 1.7, "y": 1.0, "z": 3.9 },
+    "baseStats": {
+      "topSpeed": 80, "acceleration": 26, "handling": 1.3, "grip": 1.5,
+      "health": 0, "nitroCapacity": 3.5, "nearMissZoneScale": 1.4, "driftMultiplier": 1.2
+    }
+  },
+
+  {
+    "id": "silvia_s15",
+    "name": "Silvia S15",
+    "category": "jdmLegend",
+    "unlockCost": 2000,
+    "meshScale": { "x": 1.7, "y": 0.95, "z": 4.3 },
+    "baseStats": {
+      "topSpeed": 88, "acceleration": 30, "handling": 1.7, "grip": 1.0,
+      "health": 0, "nitroCapacity": 3, "nearMissZoneScale": 1.1, "driftMultiplier": 1.8
+    }
+  },
+  {
+    "id": "rx7_fd",
+    "name": "RX-7 FD",
+    "category": "jdmLegend",
+    "unlockCost": 2500,
+    "meshScale": { "x": 1.7, "y": 0.9, "z": 4.1 },
+    "baseStats": {
+      "topSpeed": 90, "acceleration": 32, "handling": 1.8, "grip": 0.9,
+      "health": 0, "nitroCapacity": 2.8, "nearMissZoneScale": 1.0, "driftMultiplier": 2.0
+    }
+  },
+  {
+    "id": "supra_mk4",
+    "name": "Supra MK4",
+    "category": "jdmLegend",
+    "unlockCost": 3000,
+    "meshScale": { "x": 1.8, "y": 0.95, "z": 4.4 },
+    "baseStats": {
+      "topSpeed": 95, "acceleration": 28, "handling": 1.5, "grip": 1.1,
+      "health": 0, "nitroCapacity": 3.5, "nearMissZoneScale": 1.1, "driftMultiplier": 1.6
+    }
+  },
+  {
+    "id": "evo_ix",
+    "name": "Evo IX",
+    "category": "jdmLegend",
+    "unlockCost": 3500,
+    "meshScale": { "x": 1.8, "y": 1.0, "z": 4.3 },
+    "baseStats": {
+      "topSpeed": 92, "acceleration": 35, "handling": 1.6, "grip": 1.3,
+      "health": 0, "nitroCapacity": 3.2, "nearMissZoneScale": 1.2, "driftMultiplier": 1.5
+    }
+  },
+  {
+    "id": "sti_22b",
+    "name": "STI 22B",
+    "category": "jdmLegend",
+    "unlockCost": 4000,
+    "meshScale": { "x": 1.8, "y": 1.0, "z": 4.2 },
+    "baseStats": {
+      "topSpeed": 90, "acceleration": 34, "handling": 1.7, "grip": 1.4,
+      "health": 0, "nitroCapacity": 3.0, "nearMissZoneScale": 1.1, "driftMultiplier": 1.7
+    }
+  },
+
+  {
+    "id": "f150_raptor",
+    "name": "F-150 Raptor",
+    "category": "heavyTruck",
+    "unlockCost": 1500,
+    "meshScale": { "x": 2.2, "y": 1.8, "z": 5.5 },
+    "baseStats": {
+      "topSpeed": 65, "acceleration": 18, "handling": 0.7, "grip": 0.8,
+      "health": 1, "nitroCapacity": 2.5, "nearMissZoneScale": 0.8, "driftMultiplier": 1.0
+    }
+  },
+  {
+    "id": "ram_trx",
+    "name": "RAM TRX",
+    "category": "heavyTruck",
+    "unlockCost": 2000,
+    "meshScale": { "x": 2.3, "y": 1.9, "z": 5.8 },
+    "baseStats": {
+      "topSpeed": 68, "acceleration": 20, "handling": 0.6, "grip": 0.7,
+      "health": 2, "nitroCapacity": 2.5, "nearMissZoneScale": 0.8, "driftMultiplier": 1.0
+    }
+  },
+  {
+    "id": "hilux",
+    "name": "Hilux",
+    "category": "heavyTruck",
+    "unlockCost": 1000,
+    "meshScale": { "x": 2.0, "y": 1.6, "z": 5.2 },
+    "baseStats": {
+      "topSpeed": 62, "acceleration": 16, "handling": 0.8, "grip": 0.9,
+      "health": 2, "nitroCapacity": 2.0, "nearMissZoneScale": 0.9, "driftMultiplier": 1.0
+    }
+  },
+  {
+    "id": "semi_cab",
+    "name": "Semi Cab",
+    "category": "heavyTruck",
+    "unlockCost": 3000,
+    "meshScale": { "x": 2.5, "y": 2.5, "z": 7.0 },
+    "baseStats": {
+      "topSpeed": 55, "acceleration": 12, "handling": 0.5, "grip": 0.6,
+      "health": 2, "nitroCapacity": 2.0, "nearMissZoneScale": 0.8, "driftMultiplier": 1.0
+    }
+  },
+  {
+    "id": "tundra",
+    "name": "Tundra",
+    "category": "heavyTruck",
+    "unlockCost": 1800,
+    "meshScale": { "x": 2.2, "y": 1.8, "z": 5.6 },
+    "baseStats": {
+      "topSpeed": 64, "acceleration": 17, "handling": 0.7, "grip": 0.8,
+      "health": 1, "nitroCapacity": 2.5, "nearMissZoneScale": 0.9, "driftMultiplier": 1.0
+    }
+  },
+
+  {
+    "id": "gtr_r35",
+    "name": "GT-R R35",
+    "category": "supercar",
+    "unlockCost": 5000,
+    "meshScale": { "x": 1.9, "y": 0.85, "z": 4.5 },
+    "baseStats": {
+      "topSpeed": 120, "acceleration": 38, "handling": 1.6, "grip": 1.8,
+      "health": 0, "nitroCapacity": 4, "nearMissZoneScale": 0.9, "driftMultiplier": 1.2
+    }
+  },
+  {
+    "id": "911_gt3",
+    "name": "911 GT3",
+    "category": "supercar",
+    "unlockCost": 6000,
+    "meshScale": { "x": 1.85, "y": 0.8, "z": 4.4 },
+    "baseStats": {
+      "topSpeed": 125, "acceleration": 40, "handling": 1.8, "grip": 2.0,
+      "health": 0, "nitroCapacity": 3.5, "nearMissZoneScale": 0.85, "driftMultiplier": 1.1
+    }
+  },
+  {
+    "id": "mclaren_p1",
+    "name": "McLaren P1",
+    "category": "supercar",
+    "unlockCost": 8000,
+    "meshScale": { "x": 1.95, "y": 0.75, "z": 4.7 },
+    "baseStats": {
+      "topSpeed": 135, "acceleration": 42, "handling": 1.9, "grip": 1.9,
+      "health": 0, "nitroCapacity": 4.5, "nearMissZoneScale": 0.85, "driftMultiplier": 1.3
+    }
+  },
+  {
+    "id": "laferrari",
+    "name": "LaFerrari",
+    "category": "supercar",
+    "unlockCost": 10000,
+    "meshScale": { "x": 2.0, "y": 0.75, "z": 4.8 },
+    "baseStats": {
+      "topSpeed": 140, "acceleration": 45, "handling": 1.7, "grip": 1.7,
+      "health": 0, "nitroCapacity": 5, "nearMissZoneScale": 0.8, "driftMultiplier": 1.4
+    }
+  },
+  {
+    "id": "aventador",
+    "name": "Aventador",
+    "category": "supercar",
+    "unlockCost": 12000,
+    "meshScale": { "x": 2.1, "y": 0.8, "z": 4.9 },
+    "baseStats": {
+      "topSpeed": 138, "acceleration": 43, "handling": 1.5, "grip": 1.6,
+      "health": 0, "nitroCapacity": 4, "nearMissZoneScale": 0.8, "driftMultiplier": 1.5
+    }
+  }
+]

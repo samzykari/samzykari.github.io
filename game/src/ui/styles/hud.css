@@ -1,0 +1,350 @@
+/* ─── In-Game HUD ─── */
+#hud {
+  pointer-events: none;
+}
+
+#hud > * {
+  pointer-events: auto;
+}
+
+/* ─── Top Bar: Score + Rival Indicator ─── */
+.hud-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 24px;
+}
+
+.hud-score {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: clamp(16px, 2.5vw, 24px);
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.multiplier {
+  display: inline-block;
+  margin-left: 12px;
+  font-size: clamp(12px, 1.5vw, 16px);
+  color: #FFEA00;
+  transition: all 0.15s ease;
+}
+
+.multiplier.hot {
+  text-shadow: 0 0 8px rgba(255, 234, 0, 0.7);
+  animation: pulse 0.3s ease infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.15); }
+}
+
+/* ─── Rival Distance Bar ─── */
+.hud-rival {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.rival-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+}
+
+.rival-bar {
+  position: relative;
+  width: 180px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.rival-dot {
+  position: absolute;
+  top: -5px;
+  width: 14px;
+  height: 14px;
+  background: #FF007F;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 6px rgba(255, 0, 127, 0.5);
+  transition: left 0.3s ease;
+}
+
+/* ─── Power-Up Indicator ─── */
+.hud-powerup {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+/* ─── Mode Status ─── */
+.hud-mode {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  text-align: right;
+}
+
+.mode-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+}
+
+.mode-status {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.powerup-icon {
+  display: inline-block;
+  padding: 6px 18px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.powerup-slots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.powerup-slot {
+  min-width: 90px;
+  padding: 4px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+#hud-powerup-timer {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ─── Bottom Bar: Speed + Nitro + Health + Coins ─── */
+.hud-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 20px 24px;
+}
+
+.hud-speed {
+  text-align: left;
+}
+
+#hud-speed-value {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: clamp(24px, 4vw, 40px);
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.speed-unit {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ─── Nitro Gauge ─── */
+.hud-nitro {
+  text-align: center;
+  width: 200px;
+}
+
+.nitro-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.nitro-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #FF007F, #FFEA00);
+  border-radius: 4px;
+  transition: width 0.15s ease;
+}
+
+.nitro-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+/* ─── Health Pips ─── */
+.hud-health {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.health-pip {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.health-pip.filled {
+  background: #00E5FF;
+  box-shadow: 0 0 4px rgba(0, 229, 255, 0.4);
+}
+
+.health-pip.empty {
+  background: rgba(255, 0, 127, 0.2);
+  border-color: rgba(255, 0, 127, 0.4);
+}
+
+/* ─── Coins (in-game) ─── */
+.hud-coins {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Mobile Touch Controls ─── */
+#mobile-controls {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 15;
+  pointer-events: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body.touch-enabled.in-game #mobile-controls {
+  display: block;
+}
+
+.touch-zone {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#touch-left {
+  left: 0;
+}
+
+#touch-right {
+  right: 0;
+}
+
+.touch-btn {
+  position: absolute;
+  bottom: 28px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+}
+
+.touch-btn:active {
+  transform: scale(0.9);
+}
+
+.touch-btn-left {
+  left: 24px;
+  background: rgba(255, 0, 127, 0.45);
+  box-shadow: 0 0 12px rgba(255, 0, 127, 0.3);
+}
+
+.touch-btn-center {
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(229, 57, 53, 0.45);
+  box-shadow: 0 0 12px rgba(229, 57, 53, 0.3);
+}
+
+.touch-btn-center:active {
+  transform: translateX(-50%) scale(0.9);
+}
+
+.touch-btn-right {
+  right: 24px;
+  background: rgba(255, 140, 0, 0.45);
+  box-shadow: 0 0 12px rgba(255, 140, 0, 0.3);
+}

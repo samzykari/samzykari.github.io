@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMZYKARI | Building a Gapless, Local AI Voice Assistant</title>
+    <base href="/">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/site.css">
+    <style>
+        body[data-page="insights"] {
+            background: #f8f9fb;
+            color: #171717;
+        }
+
+        body[data-page="insights"] #global-bg,
+        body[data-page="insights"] #masked-layer {
+            display: none !important;
+        }
+
+        .article-shell {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .mini-kicker {
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+        }
+
+        .copy-shell {
+            background: #f5f5f3;
+            border: 1px solid rgba(23, 23, 23, 0.08);
+        }
+
+        .copy-btn {
+            background: #171717;
+            color: #fff;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body data-page="insights" class="min-h-screen text-[#171717]">
+    <div id="global-bg" class="bg-image-layer"></div>
+    <div id="masked-layer"></div>
+
+    <main class="article-shell px-5 md:px-8 lg:px-10 py-6 md:py-8 pb-16 md:pb-20">
+        <header class="flex items-center justify-between gap-4 text-sm">
+            <a href="/insights/" class="text-neutral-500 hover:text-black transition-colors">Back to archive</a>
+            <p class="text-[11px] uppercase tracking-[0.28em] text-neutral-400">Project Notes</p>
+            <div class="w-20"></div>
+        </header>
+
+        <section class="mt-12 md:mt-16">
+            <p class="mini-kicker text-[11px] text-neutral-400">Weekend build</p>
+            <h1 class="mt-4 text-4xl sm:text-5xl md:text-6xl font-[Syne] font-bold tracking-tight leading-[0.95] max-w-4xl">
+                Building a Gapless, Local AI Voice Assistant
+            </h1>
+            <p class="mt-5 max-w-3xl text-sm md:text-base leading-7 text-neutral-500 font-[Inter]">
+                I’ve always wanted a truly local, private AI voice assistant.
+                Not a cloud service listening to my room, but a real Jarvis-style sidecar running completely offline on my own hardware.
+            </p>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-500 font-[Inter]">
+                This weekend, while watching the F1 race, I decided to finally build one on my Fedora machine.
+                My setup is an HP laptop with a Ryzen 5 processor, which means the CPU is good but not infinite.
+                Running a massive LLM and a real-time TTS engine together needs serious optimization, or the audio stutters and the AI starts reading code like it’s stuck in the Matrix.
+            </p>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10 grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_260px] items-start">
+            <div>
+                <p class="mini-kicker text-[10px] text-neutral-400">Architecture</p>
+                <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">Two models talking to each other</h2>
+                <p class="mt-4 text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                    To make this work, I used two separate AI models that communicate seamlessly.
+                </p>
+                <ul class="mt-4 space-y-3 text-sm md:text-base leading-7 text-neutral-600 font-[Inter] list-disc pl-5">
+                    <li><span class="font-semibold text-neutral-800">The Brain:</span> Ministral, which handles logic and conversation.</li>
+                    <li><span class="font-semibold text-neutral-800">The Voice:</span> Kokoro-82M, a tiny but very realistic TTS model.</li>
+                </ul>
+                <p class="mt-4 text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                    The real magic happens in a custom Python bridge script.
+                    It listens to the LLM, cleans the text, and feeds it to the voice engine in real time.
+                </p>
+            </div>
+            <div class="text-sm md:text-base leading-7 text-neutral-500 font-[Inter]">
+                <p>
+                    Note: in the scripts below, replace YOUR_USERNAME with your actual Linux username.
+                </p>
+            </div>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10">
+            <p class="mini-kicker text-[10px] text-neutral-400">Step 1</p>
+            <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">System dependencies</h2>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                Before touching any AI, the operating system needs the audio routing and Python tools.
+                The key package here is espeak-ng, which Kokoro uses under the hood.
+            </p>
+            <div class="mt-6 copy-shell rounded-2xl p-4 relative">
+                <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]" data-copy="# Update your package list\nsudo dnf update -y\n\n# Install espeak-ng, Python, and wget\nsudo dnf install espeak-ng python3 python3-pip wget -y">Copy</button>
+                <pre class="text-sm leading-7 text-neutral-800 font-[Inter] pt-8"># Update your package list
+sudo dnf update -y
+
+# Install espeak-ng, Python, and wget
+sudo dnf install espeak-ng python3 python3-pip wget -y</pre>
+            </div>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                If you are on Ubuntu or Debian, simply replace dnf with apt.
+            </p>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10">
+            <p class="mini-kicker text-[10px] text-neutral-400">Step 2</p>
+            <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">Setting up the brain</h2>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                There are two ways to get the LLM onto the machine.
+                Ollama is the easy route, while manual Hugging Face downloads give you more control.
+            </p>
+
+            <div class="mt-6 space-y-6">
+                <div class="copy-shell rounded-2xl p-4 relative">
+                    <p class="font-semibold text-neutral-800">Method A: Ollama route</p>
+                    <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]" data-copy="# Install Ollama\ncurl -fsSL https://ollama.com/install.sh | sh\n\n# Download the Ministral model\nollama pull ministral">Copy</button>
+                    <pre class="mt-4 text-sm leading-7 text-neutral-800 font-[Inter]"># Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Download the Ministral model
+ollama pull ministral</pre>
+                </div>
+
+                <div class="copy-shell rounded-2xl p-4 relative">
+                    <p class="font-semibold text-neutral-800">Method B: Manual Hugging Face route</p>
+                    <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]" data-copy="# Create a folder for your manual models\nmkdir -p ~/AI/models\ncd ~/AI/models\n\n# Download a specific GGUF model directly from Hugging Face\nwget https://huggingface.co/path/to/your/chosen/ministral-8b.Q4_K_M.gguf\n\n# Create a Modelfile pointing to your downloaded file\necho 'FROM ./ministral-8b.Q4_K_M.gguf' > Modelfile\n\n# Tell Ollama to build a local runner from your file\nollama create my-custom-ministral -f Modelfile">Copy</button>
+                    <pre class="mt-4 text-sm leading-7 text-neutral-800 font-[Inter]"># Create a folder for your manual models
+mkdir -p ~/AI/models
+cd ~/AI/models
+
+# Download a specific GGUF model directly from Hugging Face
+wget https://huggingface.co/path/to/your/chosen/ministral-8b.Q4_K_M.gguf
+
+# Create a Modelfile pointing to your downloaded file
+echo 'FROM ./ministral-8b.Q4_K_M.gguf' > Modelfile
+
+# Tell Ollama to build a local runner from your file
+ollama create my-custom-ministral -f Modelfile</pre>
+                </div>
+            </div>
+
+            <p class="mt-6 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                The biggest trap was CPU bottlenecks.
+                LLMs are greedy and can grab every core available, which leaves the voice engine starving.
+                The fix was to create a custom profile that caps the thread usage and leaves room for audio.
+            </p>
+            <div class="mt-6 copy-shell rounded-2xl p-4 relative">
+                <p class="font-semibold text-neutral-800">The CPU cap profile</p>
+                <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]" data-copy="cd ~\necho 'FROM ministral' > Modelfile\n# Note: Change '6' to exactly half of your total CPU threads\necho 'PARAMETER num_thread 6' >> Modelfile\n\n# Build the capped profile\nollama create ministral-fast -f Modelfile\nrm Modelfile">Copy</button>
+                <pre class="mt-4 text-sm leading-7 text-neutral-800 font-[Inter]">cd ~
+echo 'FROM ministral' > Modelfile
+# Note: Change '6' to exactly half of your total CPU threads
+echo 'PARAMETER num_thread 6' >> Modelfile
+
+# Build the capped profile
+ollama create ministral-fast -f Modelfile
+rm Modelfile</pre>
+            </div>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10">
+            <p class="mini-kicker text-[10px] text-neutral-400">Step 3</p>
+            <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">The voice engine assets</h2>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                Kokoro needs two files: the ONNX neural network and a voice print.
+                I used the Heart voice because it sounds very human.
+            </p>
+            <div class="mt-6 copy-shell rounded-2xl p-4 relative">
+                <p class="font-semibold text-neutral-800">Asset download commands</p>
+                <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]" data-copy="# Create the project directory\nmkdir -p /home/YOUR_USERNAME/AI/voice/kokoro\ncd /home/YOUR_USERNAME/AI/voice/kokoro\n\n# Download the ONNX Neural Network\nwget -O kokoro-v0_19.onnx https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/kokoro-v0_19.onnx\n\n# Download the Heart Voice Profile\nwget -O heart_voice.npy https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/af_heart.npy">Copy</button>
+                <pre class="mt-4 text-sm leading-7 text-neutral-800 font-[Inter]"># Create the project directory
+mkdir -p /home/YOUR_USERNAME/AI/voice/kokoro
+cd /home/YOUR_USERNAME/AI/voice/kokoro
+
+# Download the ONNX Neural Network
+wget -O kokoro-v0_19.onnx https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/kokoro-v0_19.onnx
+
+# Download the Heart Voice Profile
+wget -O heart_voice.npy https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/af_heart.npy</pre>
+            </div>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10">
+            <p class="mini-kicker text-[10px] text-neutral-400">Step 4</p>
+            <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">The Python sandbox</h2>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                A virtual environment keeps the audio libraries isolated from the rest of the system.
+            </p>
+            <div class="mt-6 copy-shell rounded-2xl p-4 relative">
+                <p class="font-semibold text-neutral-800">Venv commands</p>
+                <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]" data-copy="# Create the virtual environment\npython3 -m venv venv\n\n# Activate it\nsource venv/bin/activate\n\n# Install the required audio, math, and text libraries\npip install sounddevice kokoro-onnx numpy emoji\n\n# Deactivate when finished\ndeactivate">Copy</button>
+                <pre class="mt-4 text-sm leading-7 text-neutral-800 font-[Inter]"># Create the virtual environment
+python3 -m venv venv
+
+# Activate it
+source venv/bin/activate
+
+# Install the required audio, math, and text libraries
+pip install sounddevice kokoro-onnx numpy emoji
+
+# Deactivate when finished
+deactivate</pre>
+            </div>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10">
+            <p class="mini-kicker text-[10px] text-neutral-400">Step 5</p>
+            <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">The bridge script</h2>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                This is the secret sauce.
+                Piping Ollama’s output straight into TTS sounds awful, so the bridge strips terminal junk, translates emojis, and keeps playback smooth.
+            </p>
+            <details class="mt-6">
+                <summary class="copy-shell rounded-2xl px-4 py-4 flex items-center justify-between gap-3">
+                    <span class="font-semibold text-neutral-800">Show the Python bridge</span>
+                    <span class="text-xs uppercase tracking-[0.18em] text-neutral-500">Expand</span>
+                </summary>
+                <div class="mt-4 copy-shell rounded-2xl overflow-hidden">
+                    <div class="flex items-center justify-between gap-3 border-b border-black/10 px-4 py-3 bg-white/70">
+                        <p class="text-xs uppercase tracking-[0.18em] text-neutral-500">Python bridge</p>
+                        <button class="copy-btn rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]">Copy</button>
+                    </div>
+                    <pre class="max-h-[520px] overflow-auto p-4 text-sm leading-7 text-neutral-800 font-[Inter]" id="bridge-script">import os, sys, time, re, threading, queue
+import numpy as np
+import sounddevice as sd
+import emoji
+
+# --- SYSTEM PATCHES ---
+orig_load = np.load
+def patched_load(*args, **kwargs):
+    kwargs['allow_pickle'] = True
+    return orig_load(*args, **kwargs)
+np.load = patched_load
+os.environ["PHONEMIZER_ESPEAK_LIBRARY"] = "/usr/lib64/libespeak-ng.so.1"
+from kokoro_onnx import Kokoro
+
+# --- PATHS (CHANGE 'YOUR_USERNAME'!) ---
+BASE_DIR = "/home/YOUR_USERNAME/AI/voice/kokoro"
+MODEL_PATH = os.path.join(BASE_DIR, "kokoro-v0_19.onnx")
+VOICE_PATH = os.path.join(BASE_DIR, "heart_voice.npy")
+LOG_PATH = "/tmp/heart_session.log"
+
+# Init Engine
+kokoro = Kokoro(MODEL_PATH, VOICE_PATH)
+heart_data = np.load(VOICE_PATH)
+kokoro.voices = {"af_heart": heart_data}
+
+# --- THE GAPLESS PIPELINE ---
+text_queue = queue.Queue()
+audio_queue = queue.Queue()
+
+def tts_worker():
+    while True:
+        text = text_queue.get()
+        if text is None: break
+        
+        # Emoji Translation & Deep Clean
+        clean = emoji.demojize(text).replace('_', ' ').replace(':', '') 
+        clean = re.sub(r'[*#>-]', '', clean) 
+        clean = re.sub(r'[^a-zA-Z0-9\s\.\,\!\?\'\"\-]', ' ', clean) 
+        clean = re.sub(r'\s+', ' ', clean).strip() 
+        
+        if len(clean) > 1:
+            try:
+                samples, rate = kokoro.create(clean, voice="af_heart", speed=1.1, lang="en-us")
+                
+                # Silence Trimmer (Cuts dead air from the generated audio)
+                threshold = 0.005
+                mask = np.abs(samples) > threshold
+                if np.any(mask):
+                    first = max(0, np.argmax(mask) - int(rate * 0.05))
+                    last = min(len(samples), len(mask) - np.argmax(mask[::-1]) + int(rate * 0.05))
+                    samples = samples[first:last]
+                
+                audio_queue.put((samples, rate))
+            except: pass
+        text_queue.task_done()
+
+def playback_worker():
+    # Persistent Audio Stream (No handshake lag!)
+    stream = sd.OutputStream(samplerate=24000, channels=1, blocksize=2048, latency='high')
+    stream.start()
+    
+    while True:
+        item = audio_queue.get()
+        if item is None: break
+        samples, rate = item
+        audio_data = np.expand_dims(samples, axis=1).astype(np.float32)
+        stream.write(audio_data)
+        audio_queue.task_done()
+
+threading.Thread(target=tts_worker, daemon=True).start()
+threading.Thread(target=playback_worker, daemon=True).start()
+
+# --- THE READER ---
+if not os.path.exists(LOG_PATH): open(LOG_PATH, 'w').close()
+raw_buffer, muted_line = "", False
+
+with open(LOG_PATH, "r", encoding='utf-8', errors='ignore') as f:
+    f.seek(0, 0)
+    while True:
+        chunk = f.read(10)
+        if not chunk:
+            time.sleep(0.05)
+            continue
+        
+        raw_buffer += chunk
+        
+        # Resolve hidden backspaces from LLM typos
+        while '\x08' in raw_buffer or '\b' in raw_buffer:
+            raw_buffer = re.sub(r'[^\x08\b][\x08\b]', '', raw_buffer)
+            raw_buffer = re.sub(r'^[\x08\b]+', '', raw_buffer)
+
+        # Protect ANSI Codes & Strip Braille Spinners
+        if '\x1B' in raw_buffer:
+            clean_buf = re.sub(r'\x1B\[[0-?]*[ -/]*[@-~]', '', raw_buffer)
+            if '\x1B' in clean_buf:
+                if len(raw_buffer) - raw_buffer.rfind('\x1B') < 30: continue 
+                else: raw_buffer = clean_buf.replace('\x1B', '')
+            else: raw_buffer = clean_buf
+        raw_buffer = re.sub(r'[\u2800-\u28FF]', '', raw_buffer).replace('\r', '')
+        
+        # Mute Lock (Ignores user typing)
+        if muted_line:
+            if '\n' in raw_buffer: muted_line, raw_buffer = False, raw_buffer.split('\n', 1)[-1]
+            else: raw_buffer = ""
+            continue
+            
+        # Prompt Detector
+        if any(p in raw_buffer.lower() for p in [">>>", "send a message", "script started"]):
+            muted_line, raw_buffer = True, ""
+            continue
+            
+        # Sentence Chunking
+        while True:
+            match = re.search(r'([.!?]+\s|\n)', raw_buffer)
+            if match:
+                text_queue.put(raw_buffer[:match.end()])
+                raw_buffer = raw_buffer[match.end():]
+            elif len(raw_buffer) > 400:
+                last_space = raw_buffer.rfind(' ')
+                if last_space > 0:
+                    text_queue.put(raw_buffer[:last_space])
+                    raw_buffer = raw_buffer[last_space:]
+                else:
+                    text_queue.put(raw_buffer)
+                    raw_buffer = ""
+            else: break</pre>
+                </div>
+            </details>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                The bridge uses a 3-stage threading pipeline: the reader, the brain, and the mouth.
+                It strips terminal junk, translates emoji into spoken words, keeps the audio stream open, and avoids the annoying lag between sentences.
+            </p>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10">
+            <p class="mini-kicker text-[10px] text-neutral-400">Step 6</p>
+            <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">The terminal shortcut</h2>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                To connect everything together, I used the Linux script command to capture Ollama output and write it to a log file that the bridge watches.
+            </p>
+            <div class="mt-6 copy-shell rounded-2xl p-4 relative">
+                <p class="font-semibold text-neutral-800">Shell function</p>
+                <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]">Copy</button>
+                <pre class="mt-4 text-sm leading-7 text-neutral-800 font-[Inter]">voice-ai() {
+    # 1. Clean up old sessions to prevent port collisions
+    pkill -f ministral_bridge.py
+    rm -f /tmp/heart_session.log
+    touch /tmp/heart_session.log
+    
+    # 2. Start the Python bridge in the background (Unbuffered)
+    /home/YOUR_USERNAME/AI/voice/kokoro/venv/bin/python3 -u /home/YOUR_USERNAME/AI/voice/kokoro/ministral_bridge.py > /dev/null 2>&1 &
+    BRIDGE_PID=$!
+    
+    echo "Waking up the voice engine..."
+    sleep 3 
+    
+    # 3. Launch the CPU-Capped AI natively
+    script -f -q -c "ollama run ministral-fast" /tmp/heart_session.log
+    
+    # 4. Cleanup on exit
+    echo "Shutting down system..."
+    kill $BRIDGE_PID
+    rm -f /tmp/heart_session.log
+}</pre>
+            </div>
+            <div class="mt-6 copy-shell rounded-2xl p-4 relative">
+                <p class="font-semibold text-neutral-800">Reload shell</p>
+                <button class="copy-btn absolute top-3 right-3 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.18em]">Copy</button>
+                <pre class="mt-4 text-sm leading-7 text-neutral-800 font-[Inter]">source ~/.bashrc</pre>
+            </div>
+        </section>
+
+        <section class="mt-14 border-t border-black/10 pt-10">
+            <p class="mini-kicker text-[10px] text-neutral-400">Result</p>
+            <h2 class="mt-3 text-2xl md:text-3xl font-[Syne] font-semibold">What the finished workflow feels like</h2>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                When everything is wired together, you open a terminal, type voice-ai, ask a question, and the assistant answers completely offline.
+                The whole chain stays local, the audio stays smooth, and the response comes back without the awkward gaps.
+            </p>
+            <p class="mt-4 max-w-3xl text-sm md:text-base leading-7 text-neutral-600 font-[Inter]">
+                Building it was a lot of bash errors, regex nightmares, and threading logic, but the result is worth it.
+                It is the kind of weekend project that feels equal parts ridiculous and perfect.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        function copyToClipboard(button) {
+            const text = button.closest('.copy-shell, details')?.querySelector('pre')?.innerText || button.parentElement?.querySelector('pre')?.innerText || '';
+            navigator.clipboard.writeText(text).then(() => {
+                const original = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = original;
+                }, 1400);
+            });
+        }
+
+        document.querySelectorAll('.copy-btn').forEach((button) => {
+            button.addEventListener('click', () => copyToClipboard(button));
+        });
+    </script>
+</body>
+</html>
